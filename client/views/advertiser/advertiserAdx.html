@@ -1,0 +1,66 @@
+<div class="row">
+	<div class="col-md-12 pr">
+		<div class="table-head clearfix">
+			<span class="tbhd-bar"></span>
+			<div><span routerLinkActive="hover" [routerLink]="['/home/advertiser']">客户列表</span> / ADX</div>
+		</div>
+		<div class="table-head rel clearfix">	
+			<h2>ADX列表</h2>
+		</div>
+		<ngx-datatable
+			#datatable
+			[rows]="audits"
+			[columnMode]="'force'"
+			[draggable]="false"
+			[externalSorting]="true"
+			[headerHeight]="50"
+			[rowHeight]="50"
+			[footerHeight]="50"
+			[limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo"
+			(page)="onPage($event)"
+			(select)="onSelect($event,page)"
+			[messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+			[cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+            <ngx-datatable-column name="ADX" prop="name" [resizeable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<span cutstring [cutLength]="32">{{ row.name }}</span>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="状态" prop="name" [resizeable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{ statusObj[row.status] }}">{{ statusObj[row.status] }}</span>
+						<span *ngIf="row.status === '04'" class="icon-alert-01 color-yellow0 font16 rel top2 pointer"></span>	
+						<div class="score">
+							<div class="line-height30 textleft wordwrap width300">{{ row.message }}</div>
+						</div>
+					</div>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="开关" prop="" [resizeable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<label class="ro-switch" *ngIf='row.enable == "01"'><input type="checkbox" (click)='switch($event,row)' [id]='row.id' checked='checked'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+					<label class="ro-switch" *ngIf='row.enable == "02"'><input type="checkbox" (click)='switch($event,row)' [id]='row.id'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+		    	</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="操作" prop="name" [resizeable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<a href="javascript:void(0);" (click)="audit(row.id)" title="提审">提审</a>
+					<span class="color-blue3"> | </span>
+					<a href="javascript:void(0);" (click)="sync(row.id)" title="同步">同步</a>			
+				</template>
+			</ngx-datatable-column>
+		</ngx-datatable>
+		<!--<page-footer 
+			(outer)="update($event)"
+			(allChangeOuter)="allToggleOuter($event)"
+			(deleteOuter)="outerDelete($event)"
+			[allCheck]="allCheck"
+			[pageNo]="page.pageNo"
+			[pageSize]="page.pageSize"
+			[total]="page.total"
+		></page-footer>-->
+	</div>
+</div>

@@ -1,0 +1,147 @@
+<div class="row">
+	<div class="col-md-12 pr">
+		<div class="table-head clearfix">
+			<span class="tbhd-bar"></span>
+			<div class="font14 height30">项目管理</div>
+		</div>
+		<div class="table-head rel clearfix height70">	
+			<h2 class="mt20">项目列表</h2>
+			<button class="tbhd-btn btn btn-primary bg-btn" (click)="gotoProjectAdd()">新建项目</button>
+		</div>
+		<div class="add-head-line"></div>
+		<form class="form-box ml20 mt30 mb10">
+			<div class="clearfix">
+				<div class="control-sel">
+					<label class="control-label xn-control-label">时间选择：</label>
+					<div class="dropdown">
+						<input type="text" class="form-control" value="{{ publicService.toFormalTime(startDate) + ' - ' + publicService.toFormalTime(endDate) }}" daterangepicker [options]="options" (applyDaterangepicker)="selectedDate($event.picker)">
+						<i class="icon-calendar time-icon"></i>
+					</div>
+				</div>
+				<div class="control-sel">
+					<label class="control-label xn-control-label">项目名称：</label>
+					<div class="dropdown l240">
+						<input type="text" class="form-control" placeholder="请输入项目名称" #searchInput>
+					</div>
+				</div>
+				<button class="btn btn-primary fl pro-search-btn" (click)="refreshTable({pageNo: 1})">搜索</button>
+			</div>
+		</form>
+		<ngx-datatable #allchangeList
+		    [rows]="projects"
+			[columnMode]="'force'"
+			[selected]="selected"
+			[selectionType]="'checkbox'"
+			[externalSorting]="true"
+			[draggable]="false"
+			[headerHeight]="50"
+			[externalPaging]="true"
+			[rowHeight]="50"
+			[footerHeight]="50"
+			[limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo" 
+			(page)="onPage($event)"
+			(select)="onSelect($event,page)"
+			[messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+			[cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+			<ngx-datatable-column [width]="58" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+				[resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
+			</ngx-datatable-column>
+			<ngx-datatable-column name="项目名称" prop="name" [resizeable]="false" [width]="300" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<a cutstring [cutLength]="32" [routerLink]="['/home/project/campaign/list/'+row.id+'/'+startDate+'/'+endDate]">{{row.name}}</a>
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="客户" prop="advertiserName" [resizeable]="false" [width]="200" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{row.advertiserName}}" cutstring [cutLength]="20">{{ row.advertiserName }}</span>
+					</div>
+					
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="预算" prop="totalBudget" [resizeable]="false" [width]="160" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span *ngIf="!row.isWrite" title="{{ '￥'+(row.totalBudget | number:'1.2-2') }}">{{ "￥"+(row.totalBudget | number:"1.2-2") }}</span>
+						<input *ngIf="row.isWrite" #totalbudget type="text" class="show-writeable-box" value={{row.totalBudget}} id={{row.$$index}} (blur)="switchUnWrite(row,$event)">
+						<a (click)="switchWrite(row)"><label for={{row.$$index}} class="icon-bianji switch-show-box-btn abs right10 top17"></label></a>	
+					</div>
+															
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="展现数" prop="impressionAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{row.impressionAmount}}" cutstring [cutLength]="20">{{ row.impressionAmount }}</span>
+					</div>
+					
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="点击数" prop="clickAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{row.clickAmount}}" cutstring [cutLength]="20">{{ row.clickAmount }}</span>
+					</div>
+					
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="CTR" prop="clickRate" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{ row.clickRate | permillage }}">{{ row.clickRate | permillage }}</span>
+					</div>
+							
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="二跳数" prop="jumpAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{row.jumpAmount}}" cutstring [cutLength]="20">{{ row.jumpAmount }}</span>
+					</div>
+					
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="成本" prop="totalCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{ '￥'+(row.totalCost | number:'1.2-2') }}">{{ "￥"+(row.totalCost | number:'1.2-2') }}</span>
+					</div>
+						
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="修正成本" prop="adxCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{ '￥'+(row.adxCost | number:'1.2-2') }}">{{ "￥"+(row.adxCost | number:'1.2-2') }}</span>
+					</div>
+						
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="开关" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<label class="ro-switch" *ngIf='row.status == "01"'><input type="checkbox" (click)='switch($event,row.id)' checked='checked'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+					<label class="ro-switch" *ngIf='row.status == "02"'><input type="checkbox" (click)='switch($event,row.id)'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="操作" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<a href="javascript:void(0);" (click)="editProject(row.id)" title="编辑">编辑</a>
+					<span class="color-blue3"> | </span>
+					<a href="javascript:void(0);" title="评分" (click)="goMark(row.id)">评分</a>
+		    	</template>
+			</ngx-datatable-column>
+		</ngx-datatable>
+		<page-footer 
+			(outer)="update($event)"
+			(allChangeOuter)="allToggleOuter($event)"
+			(deleteOuter)="outerDelete($event)"
+			[isAllcheck]="true"
+			[allCheck]="allCheck"
+			[pageNo]="page.pageNo"
+			[pageSize]="page.pageSize"
+			[total]="page.total"
+		></page-footer>
+	</div>
+</div>

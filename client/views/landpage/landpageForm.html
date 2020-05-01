@@ -1,0 +1,58 @@
+<div class="white-wrapper">
+	<div class="add-head">
+		<div class="add-head-bar-box">
+			<span class="add-bar"></span>
+			<span><a [routerLink]="['/home/landpage']">落地页列表</a> / 新建落地页</span>
+		</div>
+		<div class="add-title">新建落地页</div>
+	</div>
+    <div class="form-horizontal form-common" name="myForm">
+		<div class="col-md-offset-1 clearfix">
+			<span class="control-span">落地页名称：<span class="B">*</span></span>
+			<div class="left">
+				<input type="text" [(ngModel)]="landpage.name" validation [validations]="'required;maxlength:100;'" name="name" class="form-control l320" placeholder="请输入落地页名称" required="">
+			</div>
+		</div>
+		<div class="col-md-offset-1 clearfix">
+			<span class="control-span">落地页地址：<span class="B">*</span></span>
+			<div class="left">
+				<input type="text" [(ngModel)]="landpage.url" validation [validations]="'required;site;maxlength:400;'" name="url" class="form-control l320" placeholder="http://" required="">
+			</div>
+		</div>
+		<div class="col-md-offset-1 clearfix">
+			<span class="control-span">监测码：<span class="B">*</span></span>
+			<div class="left">
+				<div *ngFor="let v of codes;let i = index;" class="mb50">
+					<div class="flex-base height38">
+						<input type="text" [(ngModel)]="landpage.codes[i]" validation [validations]="'required;numberstr'" [attr.name]="'code'+i" class="form-control l320 mb50" placeholder="请输入监测码">
+						<i *ngIf="i === 0" class="icon-add font24 height38 line-height38 ml10 pointer" (click)="addCode(i)"></i>
+						<i *ngIf="i !== 0" class="icon-notpass font24 height38 line-height38 ml10 pointer" (click)="deleteCode(i)"></i>
+					</div>
+				</div>
+			</div>
+		</div>				
+		<div class="col-md-offset-1 clearfix">
+			<span class="control-span">是否需要效果监测：</span>
+			<div class="left">
+				<label class="checkbox-inline">
+					<input type="radio" [(ngModel)]="isNeedEffect" [value]="true" name="isNeedEffect">
+					<span>是</span>
+				</label>
+				<label class="checkbox-inline">
+					<input type="radio" [(ngModel)]="isNeedEffect" [value]="false" name="isNeedEffect">
+					<span>否</span>
+				</label>
+			</div>
+		</div>
+		<div class="col-md-offset-1 clearfix" *ngIf="isNeedEffect">
+			<span class="control-span">第三方检测地址：</span>
+			<div class="left">
+				<input type="text" [(ngModel)]="landpage.monitorUrl" validation [validations]="'required;site;maxlength:400;'" name="monitorUrl" class="form-control l320" placeholder="http://" required="">
+			</div>
+		</div>
+		<div class="col-md-offset-1 clearfix">
+			<button class="btn btn-default" type="button" (click)="cancel()">取消</button>
+			<button class="btn btn-primary" type="button" (click)="save()">保存</button>
+		</div>
+	</div>
+</div>

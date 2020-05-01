@@ -1,0 +1,27 @@
+<div class="trg-top clearfix" [ngStyle]="{'visibility':mainVisibility}">
+    <div class="trg-thead">
+        <ul class="clearfix trg-thead-ul">
+            <li class="trg-th-ul-left" [ngStyle]="{'width':firstWidth}"></li>
+            <li class="trg-morning" [ngStyle]="{'width':halfDayWidth}">上午</li>
+            <li class="trg-afternoon" [ngStyle]="{'width':halfDayWidth}">下午</li>
+        </ul>
+        <ul class="clearfix trg-time">
+            <li class="trg-th-ul-left" [ngStyle]="{'width':firstWidth}"></li>
+            <li *ngFor="let v of data[0];let i = index" [ngStyle]="{width:itemWidth}">{{i}}</li>
+        </ul>
+    </div>
+</div>
+<div class="trg-main" (selectstart)="cancelSelectText()" [ngStyle]="{'visibility':mainVisibility}">
+    <div class="trg-select">
+        <ul class="clearfix" #weekRowTmpl *ngFor="let v of data;let i = index">
+            <li class="trg-week" #weekNameTmpl [ngStyle]="{'width':firstWidth}">{{weekNames[i]}}</li>
+            <li *ngFor="let v1 of v;let j = index" #weekItem
+                (mousedown)="_onSelectStart(i,j)"
+                (mouseenter)="isOnSelect && _onSelecting(i,j)"
+                (mouseup)="isOnSelect && _onSelectEnd(i,j)"
+                [ngClass]="{'trg-selecting':v1.selecting,'trg-selected':v1.selected}"
+                [ngStyle]="{'width':itemWidth}"
+                [attr.data-po]="i+','+j">{{debugger && v1.selecting+","+v1.selected}}</li>
+        </ul>
+    </div>
+</div>

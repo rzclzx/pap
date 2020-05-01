@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>上海蓬景数字营销策划有限公司</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<link rel="shortcut icon" type="image/x-icon" href="./dist/client/favicon.ico" />
+	<link type="text/css" rel="stylesheet" href="./dist/client/styles/bootstrap/css/bootstrap.css">
+	<link type="text/css" rel="stylesheet" href="./dist/client/styles/common.css">
+	<link type="text/css" rel="stylesheet" href="./dist/client/styles/layout.css">
+	<link type="text/css" rel="stylesheet" href="./dist/client/styles/login.css">
+	<link type="text/css" rel="stylesheet" href="./dist/client/styles/iconfont.css">
+	<link type="text/css" rel="stylesheet" href="./dist/client/styles/datatable.css">
+	<link type="text/css" rel="stylesheet" href="./dist/client/styles/table.css">
+	<link type="text/css" rel="stylesheet" href="./dist/client/styles/modal.css">
+	<link type="text/css" rel="stylesheet" href="./dist/client/styles/public.css">
+
+	<script src="./dist/client/libs/core-js/client/shim.min.js"></script>
+	<script src="./dist/client/libs/zone.js/dist/zone.js"></script>
+	<script src="./dist/client/libs/reflect-metadata/Reflect.js"></script>
+	<script src="./dist/client/libs/systemjs/dist/system.src.js"></script>
+	<script src="./dist/client/main.config.js"></script>
+	<script>
+		System.import("dist/client/scripts")
+			.then(function(){
+				System.import("bootstrap");
+			})
+			.catch(function(err){ console.error(err); });
+	</script>
+	<base href="/">
+</head>
+<body>
+	<ng-entry></ng-entry>
+</body>
+</html>

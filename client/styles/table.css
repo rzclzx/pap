@@ -1,0 +1,120 @@
+ngx-datatable.datatable {
+    font-size: 14px;
+    overflow: visible;
+}
+.datatable input[type='checkbox']{
+    margin:0;
+    border-radius: 0;
+}
+.datatable .datatable-scroll{
+    border-left: 1px solid #DCE0E2;
+}
+.datatable .datatable-body datatable-scroller.datatable-scroll{
+    display: block;
+}
+.datatable .datatable-scroll .datatable-row-center{
+    background: #fff;
+    border-bottom: 1px solid #DCE0E2;
+}
+.datatable .datatable-header{
+    border-top: 2px solid #89B9E1;
+    border-right: 1px solid #DCDCDC;
+    border-bottom: 1px solid #E5E5E5;
+    border-left: 1px solid #DCDCDC;
+    font-weight: bold;
+    color: #646464;
+    box-sizing: border-box;
+    height:50px;
+    margin-top:-1px;
+}
+.datatable .datatable-body .datatable-row-center{
+    background: #fff;
+    border-bottom: 1px solid #DCE0E2;
+}
+.datatable .datatable-body-cell,.datatable .datatable-header-cell{
+    line-height: 50px;
+}
+.datatable .datatable-body-cell{
+    border-right: 1px solid #dCE0E2;
+}
+.datatable .datatable-body-cell-label,.datatable .datatable-header-cell-label{
+    padding:0 10px;
+}
+.datatable .datatable-checkbox{
+    text-align: center;
+    width:100%;
+    padding:0;
+}
+.datatable .datatable-row-detail{
+    width:100%;
+    border-bottom:1px solid #dCE0E2;
+}
+.datatable .datatable-footer{
+    border-top: none;
+    padding:0 20px;
+}
+
+.datatable .datatable-footer ul.pager{
+    float: right;
+}
+.datatable .datatable-footer .datatable-pager ul.pager li{
+    display: block;
+    float:left;
+    margin-left:5px;
+}
+.datatable .datatable-footer ul.pager li a{
+    border-radius: 2px;
+    padding:5px 0;
+    width:32px;
+}
+.datatable .datatable-footer ul.pager li.pages.active a{
+    color:#fff;
+    border: 1px solid #276ab0;
+    background: -webkit-linear-gradient(#4e93d7,#3a80c6);
+    background: -moz-linear-gradient(#4e93d7,#3a80c6);
+    background: -o-linear-gradient(#4e93d7,#3a80c6);
+    background: linear-gradient(#4e93d7,#3a80c6);
+}
+.datatable .empty-row{
+    height:50px;
+    background: #fff;
+    line-height: 50px;
+    border: 1px solid #dCE0E2;
+    border-top: none;
+    text-align: center;
+}
+
+.pro-choice{
+	height: 50px;
+	line-height: 48px;
+}
+.pro-choice label.table-check{
+    margin: 0;
+}
+.pro-choice .table-action i{
+    display: block;
+    font-size: 18px;
+    margin-top:15px;
+    color:#ccc;
+}
+.pro-choice .table-action:hover i{
+    color:#2A6CAE;
+}
+.pro-choice label.table-check input[type='checkbox']{
+    margin-top:18px;
+}
+.pro-choice label.table-check,.pro-choice .table-action{
+    float: left;
+    margin-right: 20px;
+    color: #999;
+    font-size: 14px;
+    cursor: pointer;
+}
+.pro-choice label.table-check:hover,.pro-choice .table-action:hover{
+    color:#2A6CAE;
+}
+.pro-choice label.table-check input[type='checkbox'],.pro-choice .table-action i{
+    float:left;
+    margin-right:10px;
+}
+

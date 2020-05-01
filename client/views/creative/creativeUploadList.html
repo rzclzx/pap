@@ -1,0 +1,201 @@
+<div class="row">
+	<div class="col-md-12 pr">
+		<div class="table-head clearfix">
+			<span class="tbhd-bar"></span>
+			<div class="font14 height30"> <span routerLinkActive="hover" [routerLink]="['/home/project']">项目列表</span> / <span class="hover" (click)="gotoCampaignlist()">活动列表</span> / 创意列表</div>
+		</div>
+		<div class="table-head rel clearfix height70">	
+			<h2 class="mt20">创意列表</h2>
+			<button class="tbhd-btn btn btn-primary bg-btn" (click)="creativeUploadAdd()">新建创意</button>
+		</div>
+		<div class="add-head-line"></div>
+		<form class="form-box ml20 mt30 mb10">
+			<div class="clearfix">
+				<div class="control-sel">
+					<label class="control-label xn-control-label">时间选择：</label>
+					<div class="dropdown">
+						<input type="text" class="form-control" [(ngModel)]="initvalue" name="initvalue" daterangepicker [options]="options" (applyDaterangepicker)="selectedDate($event.picker)">
+						<i class="icon-calendar time-icon"></i>
+					</div>
+				</div>
+				<!--<div class="control-sel">
+					<label class="control-label xn-control-label">创意名称：</label>
+					<div class="dropdown l240">
+						<input type="text" class="form-control" placeholder="请输入创意名称" #searchInput>
+					</div>
+				</div>
+				<button class="btn btn-primary fl pro-search-btn">搜索</button>-->
+			</div>
+		</form>
+		<ngx-datatable
+			#datatable
+			[rows]="creatives"
+			[selected]="selected"
+			[columnMode]="'force'"
+			[selectionType]="'checkbox'"
+			[externalPaging]="true"
+			[externalSorting]="true"
+			[draggable]="false"
+			[rowHeight]="140"
+			[headerHeight]="50"
+			[footerHeight]="55"
+			[count]="page.total"
+			[limit]="page.pageSize"
+			[offset]="page.pageNo"
+			(page)="onPage($event)"		
+			(select)="onSelect($event)"
+			[messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+			[cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+			<ngx-datatable-column [width]="58" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+				[resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
+			</ngx-datatable-column>
+			<ngx-datatable-column name="创意" prop="name" [resizeable]="false"  [width]="290" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="flex-start-center height140">
+						<div class="width-100">
+							<div *ngIf="row.title" title="{{ row.title }}" class="height35 line-height35 ell textcenter width-100">{{ row.title  }}</div>
+							<div *ngIf="row.description" title="{{ row.description }}"  class="height35 line-height35 ell textcenter width-100">{{ row.description }}</div>
+							<div class="flex-around height70">
+								<div *ngFor="let v of row.materialPaths" class="width60 height60 padding5 bgc-blue2 mr10">
+									<img *ngIf="confirm(v) === 'image'" src = "{{ baseFileUrl + v }}" class="width50 height50 dispaly-block">
+									<video *ngIf="confirm(v) === 'video'" src="{{ baseFileUrl + v }}" controls="controls" class="width50 height50 dispaly-block transparent"></video>
+								</div>
+							</div>	
+						</div>
+					</div>																		
+		    	</template>		
+			</ngx-datatable-column>
+			<ngx-datatable-column name="时段" prop="startDate" [width]="200" [resizeable]="false" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell">
+						<span title="{{row.startDate | date:'yyyy-MM-dd'}}-{{ row.endDate | date:'yyyy-MM-dd'}}">{{ row.startDate | date:'yyyy-MM-dd'}}-{{ row.endDate | date:'yyyy-MM-dd'}}</span>
+					</div>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="状态" prop="status" [resizeable]="false" [width]="140" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell">
+						<span>{{ row.status|creativeStatus }}</span>
+						<span *ngIf="row.status === '04'" class="icon-alert-01 color-yellow0 font16 rel top2 pointer"></span>	
+						<div class="score top140">
+							<div class="line-height30 textleft wordwrap width300">{{ row.message }}</div>
+						</div>
+					</div>												
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="ADX" prop="adxName" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell" title="{{row.adxName}}">
+						{{ row.adxName }}
+					</div>			
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="创意类型" prop="type" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell" title="{{ row.type|creativeType }}">
+						{{ row.type|creativeType }}	
+					</div>													
+		    	</template>
+			</ngx-datatable-column>	
+			<ngx-datatable-column name="价格" prop="price" [resizeable]="false" [width]="160" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell">
+						<span *ngIf="!row.isWrite" title="{{ '￥'+(row.price | number:'1.2-2') }}">{{ "￥"+(row.price | number:"1.2-2") }}</span>
+					    <input *ngIf="row.isWrite" #totalbudget type="text" class="show-writeable-box" [value]="row.price" id={{row.$$index}} (blur)="switchUnWrite(row,$event)">
+				     	<a (click)="switchWrite(row)"><label for={{row.$$index}} class="icon-bianji switch-show-box-btn abs right10 top60"></label></a>
+					</div>													
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="展现数" prop="impressionAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell"  title="{{row.impressionAmount}}">
+						{{ row.impressionAmount }}	
+					</div>													
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="点击数" prop="clickAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell"  title="{{row.clickAmount}}">
+						{{ row.clickAmount }}
+					</div>										
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="CTR" prop="clickRate" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell">
+						<span title="{{ row.clickRate | permillage }}">{{ row.clickRate | permillage }}</span>
+					</div>					
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="成本" prop="totalCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell">
+						<span title="{{ '￥'+(row.totalCost | number:'1.2-2') }}">{{ "￥"+(row.totalCost | number:'1.2-2') }}</span>	
+					</div>					
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="修正成本" prop="adxCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140 ell">
+					    <span title="{{ '￥'+(row.adxCost | number:'1.2-2') }}">{{ "￥"+(row.adxCost | number:'1.2-2') }}</span>	
+					</div>				
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="开关" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140">
+						<label class="ro-switch" *ngIf='row.enable =="01"'><input type="checkbox" (click)='switch($event,row)' [id]='row.id' checked='checked'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+				     	<label class="ro-switch" *ngIf='row.enable =="02"'><input type="checkbox" (click)='switch($event,row)' [id]='row.id'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+					</div>		
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="操作" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140">
+						<!--<a href="javascript:void(0);" title="审核" (click)="auditCreative(row.id)" *ngIf="row.status === '01'||row.status === '04'"><i class="icon-finish"></i></a>
+					    <a href="javascript:void(0);" title="同步" (click)="synchronizeCreative(row.id)" *ngIf="row.status === '02'"><i class="icon-syn"></i></a>
+				    	<a href="javascript:void(0);" title="查看" (click)="openDetail(row.id,row.type)"><i class="icon-alert-01"></i></a>-->
+				    	<a href="javascript:void(0);" (click)="editCreative(row)" title="编辑">编辑</a>
+					</div>
+		    	</template>
+			</ngx-datatable-column>
+		</ngx-datatable>
+		<page-footer 
+			(outer)="update($event)"
+			(allChangeOuter)="allToggleOuter($event)"
+			(deleteOuter)="outerDelete($event)"
+			(syncOuter)="outerSync($event)"
+			(auditOuter)="outerAudit($event)"
+			[isAllcheck]="true"
+			[allCheck]="allCheck"
+			[isSynchronize]="true"
+			[isAudit]="true"
+			[pageNo]="page.pageNo"
+			[pageSize]="page.pageSize"
+			[total]="page.total"
+		></page-footer>
+		<modal #detailModal [backdrop]="'static'">
+			<modal-header>
+				<h4 class="modal-title">查看详情</h4>
+			</modal-header>
+			<modal-body>
+				<form class="form-horizontal form-common creative-li-dtl clearfix" name="form" novalidate="">
+					<div class="form-group">
+						<div class="col-md-offset-1 clearfix" *ngFor="let v of detailInfo[currentDtlType]">
+							<span class="control-span" *ngIf="currentDetail[v.name]">{{ v.title }}：</span>
+							<div class="left" *ngIf="currentDetail[v.name]">
+								<div class="box">
+									<img src="" [src]="baseFileUrl + currentDetail[v.name]" *ngIf="!v.isVideo">
+									<video src="" controls="controls" [src]="baseFileUrl + currentDetail[v.name]" *ngIf="v.isVideo"></video>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</modal-body>
+			<modal-footer>
+				<button type="button" class="btn btn-default" (click)="detailModal.close()">关闭</button>
+			</modal-footer>
+		</modal>
+	</div>
+</div>

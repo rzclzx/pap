@@ -1,0 +1,234 @@
+<div class="row">
+    <div class="col-md-12 pr">
+        <div class="table-head clearfix">
+            <span class="tbhd-bar"></span>
+            <div class="font14 height30">
+                <span class="hover" [routerLink]="['/home/project']">项目列表</span>
+                <span class="hover" [routerLink]="['/home/project/mark',projectId,'staticval']">/ 评分</span>
+                <span *ngIf="activeArr[0] == activeType" class="hover" [routerLink]="['/home/project/mark',projectId,'staticval']">/ 静态值列表</span>
+                <span *ngIf="activeArr[1] == activeType" class="hover" [routerLink]="['/home/project/mark',projectId,'effect']">/ 转化值列表</span>
+                <span *ngIf="activeArr[2] == activeType || activeArr[3] == activeType" class="hover" [routerLink]="['/home/project/mark',projectId,'rule']">/ 规则组列表</span>
+                <span *ngIf="activeArr[3] == activeType" title="{{ ruleGroup.name }}">/ {{ cutLongstring(ruleGroup.name) }}</span>
+            </div>
+        </div>
+        <div class="table-head rel clearfix height70">	
+			<h2 class="mt20">评分列表</h2>	
+		</div>
+        <div class="add-head-line"></div>
+        <div class="flex-center mt10 mb10">
+			<button class="btn btn-default mark-head-btn border-gray3-1px border-right0" [class.btn-primary]="activeArr[0] == activeType" (click)="changeActiveId(activeArr[0])">静态值</button>
+            <button class="btn btn-default mark-head-btn border-gray3-1px border-right0" [class.btn-primary]="activeArr[1] == activeType" (click)="changeActiveId(activeArr[1])">转化值</button>
+            <button *ngIf="activeArr[3] != activeType" class="btn btn-default mark-head-btn border-gray3-1px" [class.btn-primary]="activeArr[2] == activeType" (click)="changeActiveId(activeArr[2])">评分规则组</button>
+            <button *ngIf="activeArr[3] == activeType" class="btn btn-default mark-head-btn border-gray3-1px btn-primary">评分规则组</button>
+		</div>
+        <div class="table-head rel clearfix height70">	
+			<button class="tbhd-btn btn btn-primary bg-btn" *ngIf="activeType === 'ruleDetail'" [routerLink]="['/home/project/rule',projectId,ruleGroupId]">新建规则</button>
+            <button class="tbhd-btn btn btn-primary bg-btn" *ngIf="activeType === 'rule'" (click)="addGroups()">新建规则组</button>
+            <button class="tbhd-btn btn btn-primary bg-btn" *ngIf="activeType === 'staticval'" (click)="goAddStatic()">新建静态值</button>	
+		</div> 
+        <ngx-datatable
+            *ngIf="activeType === 'effect'"
+            [rows]="project.effectFields"
+            [columnMode]="'force'"
+            [draggable]="false"
+            [headerHeight]="50"
+            [rowHeight]="50"
+            [footerHeight]="50"
+            [limit]="10"
+            [messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+            [cssClasses]="{ pagerPrevious:'icon-backward2', pagerNext:'icon-forward3', pagerLeftArrow: 'icon-left', pagerRightArrow: 'icon-right' }">
+            <ngx-datatable-column name="转化值" prop="" [resizeable]="false" [sortable]="false">
+                <template ngx-datatable-cell-template let-row="row">
+                    <span cutstring [cutLength]="32">{{ row.code }}</span>
+                </template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="名称" prop="totalBudget" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+                    <div class="rel">
+                        <span cutstring [cutLength]="32" *ngIf="!effectNameArr[row.$$index]">{{ row.name ? row.name : "请添加名称" }}</span>
+                        <input *ngIf="effectNameArr[row.$$index]" type="text" class="show-writeable-box" value={{row.name}} id={{row.$$index}} (blur)="switchUnWrite('effectName',row,$event)">
+                        <a (click)="switchWrite('effectName',row)"><label for={{row.$$index}} class="icon-bianji switch-show-box-btn abs right10 top17"></label></a>
+                    </div>													
+		    	</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="开关" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<label class="ro-switch" *ngIf='row.enable == "01"'><input type="checkbox" (click)='switch($event,row)' [id]='row.id' checked='checked'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+					<label class="ro-switch" *ngIf='row.enable == "02"'><input type="checkbox" (click)='switch($event,row)' [id]='row.id'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+		    	</template>
+			</ngx-datatable-column>
+        </ngx-datatable>
+        <ngx-datatable #datatable
+            *ngIf="activeType === 'staticval'"
+            [rows]="project.staticvals"
+            [columnMode]="'force'"
+            [draggable]="false"
+            [headerHeight]="50"
+            [selectionType]="'checkbox'"
+            [selected]="selected"
+            [rowHeight]="50"
+            [footerHeight]="50"
+            [limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo" 
+			(page)="onPage($event)"
+			(select)="onSelect($event,page)"
+            [messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+            [cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+            <ngx-datatable-column [width]="58" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+				[resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
+			</ngx-datatable-column>
+            <ngx-datatable-column name="名称" prop="totalBudget" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+                    <div class="rel">
+                        <span cutstring [cutLength]="32" *ngIf="!staticNameArr[row.$$index]">{{ row.name ? row.name : "请添加名称" }}</span>
+                        <input *ngIf="staticNameArr[row.$$index]" type="text" class="show-writeable-box" value={{row.name}} id={{row.$$index}} (blur)="switchUnWrite('staticName',row,$event)">
+                        <a (click)="switchWrite('staticName',row)"><label for={{row.$$index}} class="icon-bianji switch-show-box-btn abs right10 top17"></label></a>
+                    </div>													
+		    	</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="更新时间" prop="name" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<span cutstring [cutLength]="32">{{ row.updateDate ? toListTime(row.updateDate) : "" }}</span>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="静态值" prop="totalBudget" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+                    <div class="rel">
+                        <span cutstring [cutLength]="32" *ngIf="!staticValueArr[row.$$index]">{{ row.value != undefined ? row.value : "请添加静态值" }}</span>
+                        <input *ngIf="staticValueArr[row.$$index]" type="text" class="show-writeable-box" value={{row.value}} id={{row.$$index}} (blur)="switchUnWrite('staticValue',row,$event)">
+                        <a (click)="switchWrite('staticValue',row)"><label for={{row.$$index}} class="icon-bianji switch-show-box-btn abs right10 top17"></label></a>
+                    </div>													
+		    	</template>
+			</ngx-datatable-column>
+        </ngx-datatable>
+        <ngx-datatable #datatable
+            *ngIf="activeType === 'ruleDetail'"
+            [rows]="ruleGroup.rules"
+            [columnMode]="'force'"
+            [selectionType]="'checkbox'"
+            [selected]="selected"
+            [draggable]="false"
+            [headerHeight]="50"
+            [rowHeight]="50"
+            [footerHeight]="50"
+            [limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo" 
+			(page)="onPage($event)"
+			(select)="onSelect($event,page)"
+            [messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+            [cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+            <ngx-datatable-column [width]="58" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+				[resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
+			</ngx-datatable-column>
+            <ngx-datatable-column name="规则名称" prop="name" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<span cutstring [cutLength]="32">{{ row.name }}</span>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="更新时间" prop="name" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<span cutstring [cutLength]="32">{{ row.updateTime ? toListTime(row.updateTime) : "" }}</span>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="操作" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<a href="javascript:void(0);" title="编辑" [routerLink]="['/home/project/rule',projectId,ruleGroupId,row.id]">编辑</a>
+		    	</template>
+			</ngx-datatable-column>
+        </ngx-datatable>
+        <ngx-datatable #datatable
+            *ngIf="activeType === 'rule'"
+            [rows]="ruleGroups"
+            [columnMode]="'force'"
+            [selectionType]="'checkbox'"
+            [selected]="selected"
+            [draggable]="false"
+            [headerHeight]="50"
+            [rowHeight]="50"
+            [footerHeight]="50"
+            [limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo" 
+			(page)="onPage($event)"
+			(select)="onSelect($event,page)"
+            [messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+            [cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+            <ngx-datatable-column [width]="58" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+				[resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
+			</ngx-datatable-column>
+            <ngx-datatable-column name="更新时间" prop="name" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<span cutstring [cutLength]="32">{{ row.updateTime ? toListTime(row.updateTime) : "" }}</span>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="规则组名称" prop="name" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+                    <a cutstring [cutLength]="32" (click)="changeActiveId(activeArr[3],row)" class="pointer">{{row.name}}</a>			
+				</template>
+			</ngx-datatable-column>   
+            <ngx-datatable-column name="操作" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<a href="javascript:void(0);" title="编辑" (click)="editGroups(row)">编辑</a>
+		    	</template>
+			</ngx-datatable-column>
+        </ngx-datatable>
+        <page-footer *ngIf="activeType !== 'effect'"
+			(outer)="update($event)"
+			(allChangeOuter)="allToggleOuter($event)"
+			(deleteOuter)="outerDelete($event)"
+            [isAllcheck]="true"
+			[allCheck]="allCheck"
+			[pageNo]="page.pageNo"
+			[pageSize]="page.pageSize"
+			[total]="page.total"
+		></page-footer>
+        <modal #staticAdd *ngIf="activeType === 'staticval'" [backdrop]="'static'">
+			<modal-header>
+				<h4 class="modal-title color-white">新建静态值</h4>
+			</modal-header>
+			<modal-body>
+				<div class="add-form-box mb20 mt20">
+                    <div class="add-form-box-left">
+                        <div class="font16 height38 line-height38">名称：</div>
+                    </div>
+                    <div class="add-form-box-right">
+                        <input type="text" *ngIf="isOpen" class="form-control width220" [(ngModel)]="staticvalDetail.name" name="staticName" validation [validations]="'required;ruleName'">
+                    </div>
+                </div>
+                <div class="add-form-box">
+                    <div class="add-form-box-left">
+                        <div class="font16 height38 line-height38">静态值：</div>
+                    </div>
+                    <div class="add-form-box-right">
+                        <input type="text" *ngIf="isOpen" class="form-control width220" [(ngModel)]="staticvalDetail.value" name="staticValue" validation [validations]="'required;numberFloat;staticval'">
+                    </div>
+                </div>
+			</modal-body>
+			<modal-footer>
+				<button type="button" class="btn btn-default" (click)="staticCancel()">取消</button>
+				<button type="button" class="btn btn-primary" (click)="staticConfirm()">确定</button>
+			</modal-footer>
+		</modal>
+        <modal #ruleGroupsmodal *ngIf="activeType === 'rule'" [backdrop]="'static'">
+			<modal-header>
+				<h4 class="modal-title color-white">新建规则组</h4>
+			</modal-header>
+			<modal-body>
+				<div class="add-form-box mb20 mt20">
+                    <div class="add-form-box-left">
+                        <div class="font16 height38 line-height38">规则组名称：</div>
+                    </div>
+                    <div class="add-form-box-right">
+                        <input type="text" *ngIf="isOpen" class="form-control width220" [(ngModel)]="ruleGroup.name" name="ruleGroupName" validation [validations]="'required;ruleName'" placeholder="请输入规则组名称">
+                    </div>
+                </div>
+			</modal-body>
+			<modal-footer>
+				<button type="button" class="btn btn-default" (click)="ruleGroupsCancel()">取消</button>
+				<button type="button" class="btn btn-primary" (click)="ruleGroupsConfirm()">确定</button>
+			</modal-footer>
+		</modal>
+    </div>
+</div>

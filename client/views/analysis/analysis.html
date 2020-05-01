@@ -1,0 +1,106 @@
+<div class="row">
+    <div class="col-md-12 clearfix">
+		<div class="table-head clearfix">
+			<span class="tbhd-bar"></span>
+			<div class="font14 height30"> <span class="hover" [routerLink]="['/home/flowData']">数据中心</span> / 人群分析</div>
+		</div>
+		<div class="table-head rel clearfix height70">	
+			<h2 class="mt20">人群分析</h2>
+		</div>
+		<div class="add-head-line"></div>
+		<form class="form-box mt30">
+			<div class="clearfix">
+				<div class="control-sel">
+					<label class="control-label xn-control-label">时间选择：</label>
+					<div class="dropdown">
+						<input type="text" class="form-control" value="{{ publicService.toFormalTime(startDate) + ' - ' + publicService.toFormalTime(endDate) }}" name="initvalue" daterangepicker [options]="options" (applyDaterangepicker)="selectedDate($event.picker)">
+						<i class="icon-calendar time-icon"></i>
+					</div>
+				</div>
+                <div class="control-sel">
+					<label class="control-label w70 xn-control-label">客户名称：</label>
+					<div class="dropdown l240">
+						<select class="form-control gray-color" [(ngModel)]="advertiser" (change)="refresh(advertiser,'advertiserId')" name="advertiser" title="{{advertiser?advertiser.name:''}}">
+							<option [ngValue]="undefined">请选择客户</option>
+							<option *ngFor="let advertiser of advertisers" [ngValue]="advertiser" title="{{advertiser?advertiser.name:''}}">{{cut.cutLongstring(advertiser.name,20)}}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+				</div>
+				<div class="control-sel">
+					<label class="control-label xn-control-label">项目名称：</label>
+					<div class="dropdown l240">
+						<select class="form-control gray-color" [(ngModel)]="project" (change)="refresh(project,'projectId')" name="project" title="{{project?project.name:''}}">
+							<option [ngValue]="undefined">请选择项目</option>
+							<option *ngFor="let project of projects" [ngValue]="project" title="{{project?project.name:''}}">{{cut.cutLongstring(project.name,20)}}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix">
+				<div class="control-sel">
+					<label class="control-label xn-control-label">活动名称：</label>
+					<div class="dropdown l240">
+						<select class="form-control gray-color" [(ngModel)]="campaign" (change)="refresh(campaign,'campaignId')" name="campaign" title="{{campaign?campaign.name:''}}">
+							<option [ngValue]="undefined">请选择活动</option>
+							<option *ngFor="let campaign of campaigns" [ngValue]="campaign" title="{{campaign?campaign.name:''}}">{{cut.cutLongstring(campaign.name,20)}}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+				</div>
+				<!--<div class="control-sel">
+					<label class="control-label xn-control-label">创意名称：</label>
+					<div class="dropdown l240">
+						<select class="form-control gray-color" [(ngModel)]="creative" (change)="refresh(creative,'creativeId')" name="creative" title="{{creative?creative.name:''}}">
+							<option [ngValue]="undefined">请选择创意</option>
+							<option *ngFor="let creative of creatives" [ngValue]="creative" title="{{creative?creative.name:''}}">{{cut.cutLongstring(creative.name,20)}}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+				</div>-->
+			</div>
+			<div class="clearfix">
+				<div class="control-sel" *ngFor="let v of type" >
+					<input type="radio" [(ngModel)]="currentType" [value]="v" name="{{v.value}}" (change)="typeChange(currentType);">
+					{{v.name}}
+				</div>
+			</div>
+		</form>
+	</div>
+    <div class="col-md-12">
+		<div class="table-head clearfix border-b-blue1-3px">
+			<span class="tbhd-bar"></span>
+			<h2>时间分布</h2>
+		</div>
+        <div class="bg-charts" #timeCharts style="height: 500px;width: 100%;"></div>
+    </div>
+	<div class="col-md-12 mt20">
+		<div class="table-head clearfix border-b-blue1-3px">
+			<span class="tbhd-bar"></span>
+			<h2>地区分布</h2>
+		</div>
+        <div class="bg-charts" #regionCharts style="height: 500px;width: 100%;"></div>
+    </div>
+	<div class="col-md-6 mt20">
+		<div class="table-head clearfix border-b-blue1-3px">
+			<span class="tbhd-bar"></span>
+			<h2>操作系统分布</h2>
+		</div>
+        <div class="bg-charts" #systemCharts style="height: 500px;width: 100%;"></div>
+    </div>
+	<div class="col-md-6 mt20">
+		<div class="table-head clearfix border-b-blue1-3px">
+			<span class="tbhd-bar"></span>
+			<h2>运营商分布</h2>
+		</div>
+        <div class="bg-charts" #operatorCharts style="height: 500px;width: 100%;"></div>
+    </div>
+	<div class="col-md-6 mt20">
+		<div class="table-head clearfix border-b-blue1-3px">
+			<span class="tbhd-bar"></span>
+			<h2>网络分布</h2>
+		</div>
+        <div class="bg-charts" #networkCharts style="height: 500px;width: 100%;"></div>
+    </div>
+</div>

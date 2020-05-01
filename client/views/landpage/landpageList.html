@@ -1,0 +1,99 @@
+<div class="row">
+	<div class="col-md-12 pr">
+		<div class="table-head clearfix">
+			<span class="tbhd-bar"></span>
+			<div class="font14 height30">落地页管理</div>
+		</div>
+		<div class="table-head rel clearfix height70">	
+			<h2 class="mt20">落地页列表</h2>
+			<button class="tbhd-btn btn btn-primary bg-btn" (click)="gotoProjectAdd()">新建落地页</button>
+		</div>
+		<ngx-datatable #datatable
+			[rows]="landpages"
+			[columnMode]="'force'"
+			[selected]="selected"
+			[selectionType]="'checkbox'"
+			[externalPaging]="true"
+			[externalSorting]="true"
+			[draggable]="false"
+			[headerHeight]="50"
+			[rowHeight]="50"
+			[footerHeight]="50"
+			[limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo"
+			(page)="onPage($event)"
+			(select)="onSelect($event,page)"
+			[messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+			[cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+			<ngx-datatable-column [width]="58" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+				[resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
+			</ngx-datatable-column>
+			<ngx-datatable-column [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-header-template let-row="row">
+                    <div class="width-100 height50 flex-center pointer" (click)="sortName()">
+                        <div class="flex-base rel height50">
+                            <div class="ml8">落地页名称</div>
+                            <div class="rel width20 height50">
+                                <span class='sort-caret-top left5 top19' [class.border-bottom-color-blue2]="sortNameType === '01'"></span>
+                                <span class='sort-caret-bottom left5 top25' [class.border-top-color-blue2]="sortNameType === '02'"></span>
+                            </div> 
+                        </div>
+                    </div>		
+				</template>
+				<template ngx-datatable-cell-template let-row="row">
+					<span cutstring [cutLength]="32">{{ row.name }}</span>
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="落地页网址" prop="url" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<span cutstring [cutLength]="35">{{ row.url }}</span>
+		    	</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="是否监测" prop="monitorUrl" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					{{ row.monitorUrl ? "是" : "否" }}
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="操作" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<a href="javascript:void(0);" title="查看" (click)="getCode(row)">查看</a>
+					<span class="color-blue3"> | </span>
+					<a href="javascript:void(0);" title="编辑" (click)="gotoLandpageForm(row.id)">编辑</a>
+		    	</template>
+			</ngx-datatable-column>
+		</ngx-datatable>
+		<page-footer 
+			(outer)="update($event)"
+			(allChangeOuter)="allToggleOuter($event)"
+			(deleteOuter)="outerDelete($event)"
+			[isAllcheck]="true"
+			[allCheck]="allCheck"
+			[pageNo]="page.pageNo"
+			[pageSize]="page.pageSize"
+			[total]="page.total"
+		></page-footer>
+		<modal #codeModal [backdrop]="'static'">
+			<modal-header>
+				<h4 class="modal-title color-white">查看</h4>
+			</modal-header>
+			<modal-body>
+				<div class="flex-base mb20">
+					<div class="add-form-box-left font14">监测码：</div>
+					<div class="add-form-box-right-wrap color-black">
+						<div *ngFor="let v of checkCodes" class="mr20  font14">{{ v }}</div>
+					</div>
+				</div>
+				<div class="flex-base">
+					<div class="add-form-box-left font14">代码判断：</div>
+					<div class="add-form-box-right">
+						<textarea class="form-control height200  font14" [(ngModel)]="viewCode"></textarea>
+					</div>
+				</div>	
+			</modal-body>
+			<modal-footer>
+				<button type="button" class="btn btn-primary" (click)="codeModal.close()">确定</button>
+			</modal-footer>
+		</modal>
+	</div>
+</div>

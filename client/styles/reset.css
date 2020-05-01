@@ -1,0 +1,15 @@
+@charset "utf-8";
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td,section,hr{margin:0;padding:0;}
+body,button,input,select,textarea{font:14px/1 tahoma,arial,'微软雅黑';color:#fff;}
+h1,h2,h3,h4,h5,h6{font-size:100%; font-weight:normal;}
+img{border:0; border: none;}
+i,em{ font-style: normal;}
+li,ul,ol{list-style:none;}
+button,input,select,textarea{font-size:100%;}
+table{border-collapse:collapse; border-spacing:0;}
+strong,b{ font-weight:normal;}
+input::-ms-clear{display:none;}
+.clearfix:after{content:""; display:block; clear:both;}
+.clearfix{zoom:1;}
+.left{ float:left; _display:inline; }
+.right{ float:right; _display:inline; }

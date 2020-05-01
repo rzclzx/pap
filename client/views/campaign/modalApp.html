@@ -1,0 +1,51 @@
+<div class="flex-wrap ml40 mt50">
+	<div *ngFor="let v of audits;let i = index;" class="alert-app-box font16 ell" title="{{ v.name }}">
+		<input type="radio" [(ngModel)]="adx" [value]="v.adxId" name="adx{{i}}" (click)="refreshCondition(v.adxId)">{{ v.name }}
+	</div>
+</div>
+<div class="color-blue3 hover disSelected pointer ml75 font16 mt20 width150" (click)="toggle()">{{ showDetail ? "— 收起高级设置 —" : "— 展开高级设置 —" }}</div>
+<div *ngIf="showDetail">
+	<div class="flex-start-center font16 ml40 mt50 mb10">
+		<div>筛选条件：</div>
+		<div class="rel ofh">
+			<input #selected type="text" class="form-control width260 pr30" (focus)="addEvent('addInclude',selected)" (blur)="removeEvent()" placeholder="请输入筛选条件">
+			<i class="icon-search icon-input-right clickAble pointer" (click)="addInclude(selected)"></i>
+		</div>	
+		<div class="ml40">
+			<label class="dispaly-block">
+				<input type="radio" [(ngModel)]="includeType" [value]="'02'" name="includeType1"> 模糊搜索
+			</label>
+			<label class="dispaly-block">
+				<input type="radio" [(ngModel)]="includeType" [value]="'01'" name="includeType2"> 精确搜索
+			</label>
+		</div>
+	</div>
+	<div class="flex-base ml120 font16 mb10" *ngFor="let v of include;let i = index;">	
+		<div class="flex-start-center bgc-gray3 height35 radius3">
+			<div class="mr10 ml10" cutstring [cutLength]="50">{{ typeObj[v.type] + "/筛选/" + v.word }}</div>
+			<span class="icon-delete2 color-gray5 mr10 pointer" (click)="deleteInclude(i)"></span>
+		</div>
+	</div>
+	<div class="flex-start-center font16 ml40 mt20 mb10">
+		<div>排除条件：</div>
+		<div class="rel ofh">
+			<input #remove type="text" class="form-control width260 pr30" (focus)="addEvent('addExclude',remove)" (blur)="removeEvent()" placeholder="请输入排除条件">
+			<i class="icon-search icon-input-right clickAble pointer" (click)="addExclude(remove)"></i>
+		</div>	
+		<div class="ml40">
+			<label class="dispaly-block">
+				<input type="radio" [(ngModel)]="excludeType" [value]="'02'" name="excludeType1"> 模糊搜索
+			</label>
+			<label class="dispaly-block">
+				<input type="radio" [(ngModel)]="excludeType" [value]="'01'" name="excludeType2"> 精确搜索
+			</label>
+		</div>
+	</div>
+	<div class="flex-base ml120 font16 mb10" *ngFor="let v of exclude;let i = index;">	
+		<div class="flex-start-center bgc-gray3 height35 radius3">
+			<div class="mr10 ml10" cutstring [cutLength]="50">{{ typeObj[v.type] + "/排除/" + v.word }}</div>
+			<span class="icon-delete2 color-gray5 mr10 pointer" (click)="deleteExclude(i)"></span>
+		</div>
+	</div>
+</div>
+

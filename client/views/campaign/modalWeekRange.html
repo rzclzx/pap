@@ -1,0 +1,23 @@
+<div class="trg-tip clearfix">
+	<p>单击方格，可选中/取消时间点；单击拖动方格，可选中/取消某一连续时间段。</p>
+	<ul>
+		<li><span class="trg-select"></span>未选中</li>
+		<li><span class="trg-selecting"></span>点击态</li>
+		<li><span class="trg-selected"></span>已选中</li>
+	</ul>
+</div>
+<week-range-picker #weekRangePicker></week-range-picker> 
+<div class="timeRange-list clearfix">
+	<span class="timeRange-title">已选时间</span>
+	<ul class="timeRange-container">
+		<li class="clearfix" *ngFor="let v of timeRange">
+			<span>{{weekRangePicker.weekNames[v.week]}}</span>
+			<div>
+				<span class="time-list-chk" *ngFor="let v1 of v.ranges;trackBy:index">
+					{{v1.split('-')[0]<10?'0'+v1.split('-')[0]:v1.split('-')[0]}}:00-{{v1.split('-')[1]<10?'0'+v1.split('-')[1]:v1.split('-')[1]}}:59
+					<i class="icon-close" data-ng-click="delRange(v,v1)"></i>
+				</span>
+			</div>
+		</li>
+	</ul>
+</div>

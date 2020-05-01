@@ -1,0 +1,214 @@
+<div class="row">
+	<div class="col-md-12 pr">
+		<div class="table-head clearfix">
+			<span class="tbhd-bar"></span>
+			<div class="font14 height30"> <span routerLinkActive="hover" [routerLink]="['/home/project']">项目列表</span> / 活动列表</div>
+		</div>
+		<div class="table-head rel clearfix height70">	
+			<h2 class="mt20">活动列表</h2>
+			<button class="tbhd-btn btn btn-primary bg-btn" (click)="addCampaign()">新建活动</button>
+		</div>
+		<div class="add-head-line"></div>
+		<form class="form-box ml20 mt30 mb10">
+			<div class="clearfix">
+				<div class="control-sel">
+					<label class="control-label xn-control-label">时间选择：</label>
+					<div class="dropdown">
+						<input type="text" data-daterange="" class="form-control" [(ngModel)]="initvalue" name="initvalue" daterangepicker [options]="options" (applyDaterangepicker)="selectedDate($event.picker)">
+						<i class="icon-calendar time-icon"></i>
+					</div>
+				</div>
+				<div class="control-sel">
+					<label class="control-label xn-control-label">活动名称：</label>
+					<div class="dropdown l240">
+						<input type="text" class="form-control" placeholder="请输入活动名称" #searchInput>
+					</div>
+				</div>
+				<button class="btn btn-primary fl pro-search-btn" (click)="listCampaigns({pageNo: 1})">搜索</button>
+			</div>
+		</form>
+		<ngx-datatable #allchangeList
+			[rows]="campaigns"
+			[columnMode]="'force'"
+			[selected]="selected"
+			[selectionType]="'checkbox'"
+			[externalPaging]="true"
+			[externalSorting]="true"
+			[draggable]="false"
+			[headerHeight]="50"
+			[rowHeight]="50"
+			[footerHeight]="50"
+			[limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo"
+			(page)="onPage($event)"
+			(select)="onSelect($event,page)"
+			[messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+			[cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+			<ngx-datatable-column [width]="58" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+				[resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
+			</ngx-datatable-column>
+			<ngx-datatable-column [width]="300" [resizeable]="false" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-header-template let-row="row">
+                    <div class="width-100 height50 flex-center pointer" (click)="sortName()">
+                        <div class="flex-base rel height50">
+                            <div class="ml8">活动名称</div>
+                            <div class="rel width20 height50">
+                                <span class='sort-caret-top left5 top19' [class.border-bottom-color-blue2]="sortNameType === '01'"></span>
+                                <span class='sort-caret-bottom left5 top25' [class.border-top-color-blue2]="sortNameType === '02'"></span>
+                            </div> 
+                        </div>
+                    </div>		
+				</template>
+				<template ngx-datatable-cell-template let-row="row">
+					<a cutstring [cutLength]="32" [routerLink]="['/home/project/creativeUploadList/'+row.id+'/'+startDate+'/'+endDate]">{{row.name}}</a>
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="时段" prop="type" [width]="200" [resizeable]="false" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<span class="mr20" title="{{row.startDate | date:'yyyy-MM-dd'}}-{{ row.endDate | date:'yyyy-MM-dd'}}">{{ row.startDate | date:'yyyy-MM-dd'}}-{{ row.endDate | date:'yyyy-MM-dd'}}</span>		
+					<a>
+						<label class="icon-bianji switch-show-box-btn abs right10 top17">
+							<input type="text" class="form-control width0 height0 opacity0 abs right10" [(ngModel)]="campaignsTime[$$index]" [attr.name]="'campaignsTime'+row.$$index" daterangepicker [options]="campaingsTimeOptions[row.$$index]" (applyDaterangepicker)="selectedOneDate($event.picker,row)">
+						</label>
+					</a>		
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="状态" prop="status" [width]="170" [resizeable]="false" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.statusMessage }}">{{ row.statusMessage }}</div>
+					
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="创意数" prop="creativeNum" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.creativeNum }}">
+						{{ row.creativeNum }}
+					</div>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="展现数" prop="impressionAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.impressionAmount }}">
+						{{ row.impressionAmount }}
+					</div>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="点击数" prop="clickAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.clickAmount }}">
+						{{ row.clickAmount }}
+					</div>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="CTR" prop="clickRate" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{ row.clickRate | permillage }}">{{ row.clickRate | permillage }}</span>
+					</div>
+										
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="二跳数" prop="jumpAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.jumpAmount }}">
+						{{ row.jumpAmount }}
+					</div>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="成本" prop="totalCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{ '￥'+(row.totalCost | number:'1.2-2') }}">{{ "￥"+(row.totalCost | number:'1.2-2') }}</span>
+					</div>
+									
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="修正成本" prop="adxCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span title="{{ '￥'+(row.adxCost | number:'1.2-2') }}">{{ "￥"+(row.adxCost | number:'1.2-2') }}</span>
+					</div>
+										
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="广告质量" prop="campaignScore" [resizeable]="false" [width]="170" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div *ngIf="row.campaignScore.score != undefined">	
+						<span title="{{ row.campaignScore.score + '分' }}">{{ row.campaignScore.score == '评分异常' ? row.campaignScore.score : row.campaignScore.score + '分' }}</span>	
+						<span class="icon-alert-01 color-yellow0 font16 rel top2 pointer "></span>	
+						<div class="score">
+							<div *ngIf="row.campaignScore.ruleTrigger" class="line-height30 textleft wordwrap width300">{{ '" ' + row.campaignScore.ruleName + ' "' + " 为 fx = " + row.campaignScore.ruleTrigger }}</div>
+							<div class="line-height30 textleft wordwrap width300" *ngFor="let v of row.campaignScore.formulaList">{{'" ' + v.name + ' "' + " 值为 " + v.value + "，权重为 " + v.weight }}</div>
+						</div>
+					</div>	
+					<div *ngIf="row.campaignScore.score == undefined">--</div>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="开关" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<label class="ro-switch" *ngIf='row.status =="01"'><input type="checkbox" (click)='switch($event,row)' [id]='row.id' checked='checked'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+					<label class="ro-switch" *ngIf='row.status =="02"'><input type="checkbox" (click)='switch($event,row)' [id]='row.id'><div class="slider"><div class="slider-thumb"></div><i class="switch-right icon-checked2"></i><i class="switch-error icon-delete2"></i><div class="slider-thumb-right"></div></div></label>
+		    	</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="操作" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<a href="javascript:void(0);" (click)="editCampaign(row.id)" title="编辑">编辑</a>
+					<span class="color-blue3"> | </span>
+					<a href="javascript:void(0);" title="复制" (click)="copy(row)">复制</a>
+		    	</template>
+			</ngx-datatable-column>
+		</ngx-datatable>
+		<modal #copyModal [backdrop]="'static'">
+			<modal-header>
+				<h4 class="modal-title color-white">赋值活动</h4>
+			</modal-header>
+			<modal-body>
+				<div class="font16">
+					<div class="add-form-box">
+						<div class="add-form-box-left width-40">
+							<div>已选中的活动：</div>
+						</div>	
+						<div class="add-form-box-right rel width-60 color-black">
+							<div>{{ copyCampaign.name }}</div>
+						</div>			
+					</div>
+					<div class="add-form-box">
+						<div class="add-form-box-left width-40">
+							<div>要复制到的项目：</div>
+						</div>	
+						<div class="add-form-box-right rel width-60">
+							<div class="width260 rel">
+								<select class="form-control" [(ngModel)]="copyProject">
+									<option [ngValue]="undefined">请选择项目</option>
+									<option *ngFor="let v of projects" [ngValue]="v" cutstring [cutLength]="20">{{ v.name }}</option>
+								</select>
+								<span class='camadd-caret'></span>
+							</div>					
+						</div>			
+					</div>
+				</div>
+			</modal-body>
+			<modal-footer>
+				<button type="button" class="btn btn-default" (click)="copyCancel()">取消</button>
+				<button type="button" class="btn btn-primary" (click)="copyConfirm()">确定</button>
+			</modal-footer>
+		</modal>
+		<page-footer 
+			(outer)="update($event)"
+			(allChangeOuter)="allToggleOuter($event)"
+			(deleteOuter)="outerDelete($event)"
+			(syncOuter)="outerSync($event)"
+			(priceOuter)="changePrice($event)"
+			[isAllcheck]="true"
+			[allCheck]="allCheck"
+			[selected]="selected"
+			[isSynchronize]="true"
+			[isPrice]="true"
+			[showPrice]="false"
+			[pageNo]="page.pageNo"
+			[pageSize]="page.pageSize"
+			[total]="page.total"
+		></page-footer>
+	</div>
+</div>

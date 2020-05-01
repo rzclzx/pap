@@ -1,0 +1,89 @@
+<div class="row">
+	<div class="col-md-12 pr">
+		<div class="table-head clearfix">
+			<span class="tbhd-bar"></span>
+			<div class="font14 height30" >人群管理</div>
+		</div>
+		<div class="table-head rel clearfix height70">	
+			<h2 class="mt20">人群管理列表</h2>
+			<button class="tbhd-btn btn btn-primary bg-btn" (click)="gotoUpload()">上传文件</button>
+		</div>
+		<ngx-datatable #datatable
+			[rows]="populations"
+			[selectionType]="'checkbox'"
+			[selected]="selected"
+			[columnMode]="'force'"
+			[externalSorting]="true"
+			[draggable]="false"
+			[externalPaging]="true"
+			[rowHeight]="50"
+			[headerHeight]="50"
+			[footerHeight]="55"
+			[limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo" 
+			(page)="onPage($event)"
+			(select)="onSelect($event,page)"	
+			[messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+			[cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+			<ngx-datatable-column [width]="58" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+				[resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
+			</ngx-datatable-column>
+			<ngx-datatable-column [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-header-template let-row="row">
+                    <div class="width-100 height50 flex-center pointer" (click)="sortName()">
+                        <div class="flex-base rel height50">
+                            <div class="ml8">人群名称</div>
+                            <div class="rel width20 height50">
+                                <span class='sort-caret-top left5 top19' [class.border-bottom-color-blue2]="sortNameType === '01'"></span>
+                                <span class='sort-caret-bottom left5 top25' [class.border-top-color-blue2]="sortNameType === '02'"></span>
+                            </div> 
+                        </div>
+                    </div>		
+				</template>
+				<template ngx-datatable-cell-template let-row="row">
+					<span cutstring [cutLength]="32">{{ row.name }}</span>
+				</template>			
+			</ngx-datatable-column>
+			<ngx-datatable-column [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-header-template let-row="row">
+                    <div class="width-100 height50 flex-center pointer" (click)="sortTime()">
+                        <div class="flex-base rel height50">
+                            <div class="ml8">日期</div>
+                            <div class="rel width20 height50">
+                                <span class='sort-caret-top left5 top19' [class.border-bottom-color-blue2]="sortTimeType === '01'"></span>
+                                <span class='sort-caret-bottom left5 top25' [class.border-top-color-blue2]="sortTimeType === '02'"></span>
+                            </div> 
+                        </div>     
+                    </div>		
+				</template>
+				<template ngx-datatable-cell-template let-row="row">
+					<span title="{{ row.updateTime | date:'yyyy-MM-dd'}}">{{ row.updateTime | date:'yyyy-MM-dd'}}</span>
+					
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="覆盖数量" prop="amount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.amount }}">
+						{{ row.amount }}
+					</div>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="操作" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<a href="javascript:void(0);" (click)="edit(row.id)" title="编辑">编辑</a>
+		    	</template>
+			</ngx-datatable-column>
+		</ngx-datatable>
+		<page-footer 
+			(outer)="update($event)"
+			(allChangeOuter)="allToggleOuter($event)"
+			(deleteOuter)="outerDelete($event)"
+			[isAllcheck]="true"
+			[allCheck]="allCheck"
+			[pageNo]="page.pageNo"
+			[pageSize]="page.pageSize"
+			[total]="page.total"
+		></page-footer>
+	</div>
+</div>

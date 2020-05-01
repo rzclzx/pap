@@ -1,0 +1,440 @@
+<div class="white-wrapper">
+	<div class="add-head">
+		<div class="add-head-bar-box">
+			<span class="add-bar"></span>
+			<span><span  routerLinkActive="hover" [routerLink]="['/home/project']">项目列表</span>/ <span class="hover" [routerLink]="['/home/project/campaign/list',this.projectId]">活动列表</span> / 设置活动</span>
+		</div>
+		<div class="add-title">设置活动</div>
+	</div>
+	<div class="add-form">
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+				<div>设置活动名称</div>
+			</div>
+			<div class="add-form-box-right rel">
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">活动名称：</div>
+				<div class="rel ml20">
+					<input type="text" [(ngModel)]="campaign.name" name="name" validation [validations]="'required;maxlength:100'" [validName]="'活动名称'" class="form-control width320" placeholder="请输入活动名称" required="">
+				</div>		
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+				<div>设置活动预算和出价</div>
+			</div>
+			<div class="add-form-box-right rel">
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">活动周期：</div>
+				<div class="rel ml20 width320">
+					<input *ngIf="campaign.quantities.length==1" type="text" class="form-control transparent pointer width320 abs top0" [(ngModel)]="formalTimes" name="daterange" validation [validations]="'required'" [validName]="'周期'">
+					<input class="form-control width320" *ngIf="campaign.quantities.length==1 && dateRangeOptions" type="text" name="daterange1" daterangepicker [options]="dateRangeOptions" (applyDaterangepicker)="selectedDate($event.picker)">
+					<input class="form-control width320" *ngIf="campaign.quantities.length>1" type="text" disabled="disabled" [(ngModel)]="formalTimes" name="daterange2">
+					<i class="icon-calendar time-icon"></i>
+				</div>		
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">日均总预算：</div>
+				<div class="rel ml20 camadd-dayBudget-box-input">
+					<input *ngIf='!detailShow && this.campaign.quantities.length == 1' type="text" [(ngModel)]="this.campaign.quantities[0].budget" validation [validations]="'required;number;maxnum:99999999'" [validName]="'日均总预算'" name="campaign.quantities[0].dailyBudget" class="form-control width320" placeholder="查看详细设置" required="">
+				    <input *ngIf='detailShow || (!detailShow && this.campaign.quantities.length != 1)' disabled='disabled' type="text" class="form-control width320" placeholder="查看详细设置">
+					<a class='camadd-dayBudget-box-btn unselect-word hover' (click)='detailshow()'>{{ detailShow ? "收起高级设置" : "展开高级设置" }}</a>
+				</div>		
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">日均最大展现：</div>
+				<div class="rel ml20 camadd-dailyImpression-box-input">
+					<input *ngIf='!detailShow && this.campaign.quantities.length == 1' type="text" [(ngModel)]="campaign.quantities[0].impression" validation [validations]="'required;number;maxnum:99999999'" [validName]="'日均最大展现'" name="campaign.quantities[0].dailyImpression" class="form-control width320" placeholder="查看详细设置" required="">
+				    <input *ngIf='detailShow || (!detailShow && this.campaign.quantities.length != 1)' disabled='disabled' type="text" class="form-control width320" placeholder="查看详细设置">
+				</div>		
+			</div>
+		</div>
+		<div class='camadd-dayBudget-detail pb30 ml130' *ngIf='detailShow'>
+			<div style='padding: 10px 100px 0 100px;font-size: 14px;color:#999;'>分段设置预算，分段预算总和小于或等于活动总预算,注：(设置分段结束时间后自动添加下一条详细)</div>
+			<div *ngFor='let v of campaign.quantities;let i = index' class="flex-base mt20 ml40">
+				<div class="flex-base">
+					<div class="rel flex-base mr10">
+						<span class="height38 line-height38 font14 color-gray5">起始：</span>
+						<input type="text" class="form-control" style='width:148px;' disabled='disabled' value={{toFormalTime(campaign.quantities[i].startDate)}}>
+						<i class="icon-calendar time-icon0"></i>
+					</div>
+					<div class="rel flex-base mr10">
+						<span class="height38 line-height38 font14 color-gray5">结束：</span>
+						<input *ngIf="detailOptions[i]" type="text" class="form-control" id={{i}} style='width:148px' [(ngModel)]="detailFormalEnd[i]" name='detailFormalEnd[i]' daterangepicker [options]="detailOptions[i]" (selected)="selectedDatailDate($event,i)">
+						<input *ngIf="!detailOptions[i]" type="text" class="form-control" style='width:148px'>
+						<i class="icon-calendar time-icon"></i>
+					</div>
+				</div>
+				<div class='flex-base mr10'>
+					<label class='height38 line-height38 font14 color-gray5'>预算：</label>
+					<div class="cf-err">
+						<input type="text" class="form-control" style='width:170px' validation [validations]="'required;typeflag'" [attr.name]="'budget'+i" [(ngModel)]="v.budget" placeholder="请输入预算">
+					</div>
+				</div>
+				<div class='flex-base mr10'>
+					<label class='height38 line-height38 font14 color-gray5'>展现数：</label>
+					<div class="cf-err" style='width: 230px;display: flex;flex-flow: row nowrap;'>
+						<input type="text" class="form-control" style='width:170px' validation [validations]="'required;typeflag'" [attr.name]="'impression'+i" [(ngModel)]="v.impression" placeholder="请输入展现数">
+			            <i (click)='closeDetailList(v)' class='camadd-dayBudget-detail-closebtn icon-error2' style='margin-left:20px;font-size: 32px;color: #85868A'></i>
+					</div>
+				</div>			
+			</div>					
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">频次控制：</div>
+				<div class="ml20">
+					<div class="left" style="position: relative;">
+						<select class="form-control test camadd-select" [(ngModel)]="campaign.frequency.controlObj" name="controlObj" (change)="isfrequency($event)">
+							<option [ngValue]="undefined">无</option>
+							<option *ngFor="let v of controlObjs" [ngValue]="v.value">{{v.name}}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+					<div class="left" style="position: relative;margin-left: 20px;">
+						<select *ngIf='isFrequency' class="form-control test camadd-select" [(ngModel)]="campaign.frequency.timeType" name="timeType">
+							<option *ngFor="let v of timeTypes" [ngValue]="v.value">{{v.name}}</option>
+						</select>
+						<select *ngIf='!isFrequency' disabled='disabled' class="form-control test camadd-select" [(ngModel)]="campaign.frequency.timeType" name="timeType">
+							<option *ngFor="let v of timeTypes" [ngValue]="v.value">{{v.name}}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+					<div class="left" style="position: relative;margin-left: 20px;" >
+						<input *ngIf='isFrequency' type="text" class="form-control"  style="width:110px!important;" [(ngModel)]="campaign.frequency.number" name="frequencyNumber" placeholder="请输入频次" required="" validation [validations]="'selectNumber'" [validName]="'频数'">
+						<input *ngIf='!isFrequency' disabled='disabled' type="text"  style="width:110px!important;" class="form-control" [(ngModel)]="campaign.frequency.number" name="frequencyNumber" placeholder="请输入频次" required="" validation [validations]="'selectNumber'" [validName]="'频数'">
+					</div>
+					<div class="left" style="font-size: 16px;line-height: 38px;margin-left: 10px;">次</div>	
+				</div>		
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">选择评分规则：</div>
+				<div class="rel ml20">
+					<select class="form-control width320" [(ngModel)]="campaign.ruleGroupId" name="ruleGroupId">
+						<option [ngValue]="''">请选择评分规则</option>
+						<option *ngFor='let v of ruleGroups' [ngValue]="v.id" cutstring [cutLength]="35">{{ v.name }}</option>
+					</select>
+					<span class='camadd-caret'></span>
+				</div>	
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">是否匀速：</div>
+				<div class="rel ml20">
+					<label>
+						<input *ngIf='campaign.uniform === "1"' checked='checked' type='checkbox' (click)='changeSpeed($event)'>
+				        <input *ngIf='campaign.uniform === "0" || campaign.uniform === undefined' type='checkbox' (click)='changeSpeed($event)'>
+					</label>
+				</div>		
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+				<div>设置活动受众</div>
+			</div>
+			<div class="add-form-box-right rel">
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">加载现有活动定向：</div>
+				<div class="rel">
+					<select class="form-control width350 ml20" title="{{currentCampaign.name}}" name="currentCampaign" [(ngModel)]="currentCampaign" (change)="importTargets(currentCampaign)">
+						<option value="">请选择活动</option>
+						<option *ngFor="let v of campaigns" [ngValue]="v" title="{{v.name}}">{{ cut.cutLongstring(v.name,20) }}</option>
+					</select>
+					<span class='camadd-caret'></span>
+				</div>	
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">地域定向：</div>
+				<div class="mr20 ml20">
+					<label>
+						<input type="radio" [(ngModel)]="isRegion" name="isRegion" [value]="true" (click)="isregion()"> 不限 
+					</label>
+				</div>
+				<div class="mr20">
+					<label>
+						<input type="radio" [(ngModel)]="isRegion" name="disRegion" [value]="false"> 自定义
+					</label>
+				</div>
+				<div class="rel">
+					<input *ngIf="!isRegion" type="text" class="form-control width260" name="regionNames" [(ngModel)]="regionNames" (click)="openRegionModal()" placeholder="请选择地域" cutstring [cutLength]="30">
+					<input *ngIf="isRegion" disabled="disabled" type="text" class="form-control width260" name="regionNames" [(ngModel)]="regionNames" (click)="openRegionModal()"  placeholder="请选择地域">
+					<span class='camadd-caret'></span>
+					<modal #regionModal [backdrop]="'static'">
+						<modal-header>
+							<h4 class="modal-title color-white">选择地区</h4>
+						</modal-header>
+						<modal-body>
+							<modal-region></modal-region>
+						</modal-body>
+						<modal-footer>
+							<button type="button" class="btn btn-cancel" (click)="regionCancel()">取消</button>
+							<button type="button" class="btn btn-primary" (click)="regionModalSubmit()">确定</button>
+						</modal-footer>
+					</modal>
+				</div>			
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">广告位定向：</div>
+				<div class="rel">
+					<label class="checkbox-inline" *ngFor="let v of selectInfo.adType.data;let i = index">
+						<input type="checkbox" [(ngModel)]="v.selected" name="adType{{i}}" (change)="isselected(v)">
+						<span>{{v.name}}</span>
+					</label>
+				</div>			
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">时段定向：</div>
+				<div class="rel ml20">
+					<input class="form-control width320" [(ngModel)]="weekRangeNames" name="weekRangeNames" type="text" (click)="openWeekRangeModal()" placeholder="请选择时间">
+					<span class='camadd-caret'></span>
+					<modal #weekRangeModal class="modal-week" [backdrop]="'static'">
+						<modal-header>
+							<h4 class="modal-title color-white">周时段</h4>
+						</modal-header>
+						<modal-body>
+							<modal-week-range></modal-week-range>
+						</modal-body>
+						<modal-footer>
+							<button type="button" class="btn btn-default" (click)="weekRangeModal.dismiss()">取消</button>
+							<button type="button" class="btn btn-primary" (click)="weekRangeModalSubmit()">确定</button>
+						</modal-footer>
+					</modal>
+				</div>		
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">ADX定向：</div>
+				<div class="rel ml20">
+					<input class="form-control width320" type="text" value="{{ '已选择 ' + appAmount + ' 个APP' }}" name="appAmount" (click)="openAppModal()" placeholder="请选择ADX">
+					<span class='camadd-caret'></span>
+					<modal #appModal [backdrop]="'static'" class="modal700">
+						<modal-header>
+							<h4 class="modal-title color-white font16">选择ADX</h4>
+						</modal-header>
+						<modal-body>
+							<modal-app *ngIf="showAdx" [audits]="audits" [adx]="campaignTarget.adx" [include]="campaignTarget.include" [exclude]="campaignTarget.exclude"></modal-app>
+						</modal-body>
+						<modal-footer>
+							<button type="button" class="btn btn-default" (click)="appModalcancel()">取消</button>
+							<button type="button" class="btn btn-primary" (click)="appModalSubmit()">确定</button>
+						</modal-footer>
+					</modal>
+				</div>		
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="color-blue3 hover ml175 disSelected pointer" (click)="toggleTargetDetail()">{{ showTargetDetail ? "— 收起高级选项 —" : "— 展开高级选项 —" }}</div>	
+			</div>
+		</div>
+		<div class="add-form-box" *ngIf="showTargetDetail">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">人群定向：</div>
+				<div class="mr20 ml20">
+					<label>
+						<input type="radio" [(ngModel)]="populationFlag" [value]="-1" name="populationFlag"> 不限 
+					</label>
+				</div>
+				<div class="mr20">
+					<label>
+						<input type="radio" [(ngModel)]="populationFlag" [value]="1" name="populationFlag" > 定向人群
+					</label>
+				</div>
+				<div *ngIf="populationFlag == 1" class="rel mr20">
+					<select class="form-control width175" name="population" [(ngModel)]="population">
+						<option value="{{disPopulation}}">请选择定向人群</option>
+						<option *ngFor="let v of populations" [ngValue]="v">{{v.name}}</option>
+					</select>
+					<span class='camadd-caret'></span>
+				</div>
+				<div class="mr20">
+					<label>
+						<input type="radio" [(ngModel)]="populationFlag" [value]="0" name="populationFlag"> 排除人群
+					</label>
+				</div>
+				<div *ngIf="populationFlag == 0" class="rel">
+					<select class="form-control width175" name="population" [(ngModel)]="population">
+						<option value="{{disPopulation}}">请选择排除人群</option>
+						<option *ngFor="let v of populations" [ngValue]="v">{{v.name}}</option>
+					</select>
+					<span class='camadd-caret'></span>
+				</div>			
+			</div>
+		</div>
+		<div class="add-form-box" *ngIf="showTargetDetail">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">网络定向：</div>
+				<div class="mr20 ml20">
+					<label>
+						<input type="radio" [(ngModel)]="selectInfo.network.flag" [value]="false" name="networkflag" (click)="setAllSelect('network',false)"> 不限 
+					</label>
+				</div>
+				<div class="mr20">
+					<label>
+						<input type="radio" [(ngModel)]="selectInfo.network.flag" [value]="true" name="networkflag" (click)="setAllSelect('network',true)"> 自定义
+					</label>
+				</div>
+				<div class="rel" *ngIf="selectInfo.network.flag === true">
+					<label class="checkbox-inline" *ngFor="let v of selectInfo.network.data;let i = index">
+						<input type="checkbox" [(ngModel)]="v.selected" name="network{{i}}" (click)="selectClick(selectInfo.network,i,$event)">
+						<span>{{v.name}}</span>
+					</label>
+				</div>			
+			</div>
+		</div>
+		<div class="add-form-box" *ngIf="showTargetDetail">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">运营商定向：</div>
+				<div class="mr20 ml20">
+					<label>
+						<input type="radio" [(ngModel)]="selectInfo.operator.flag" [value]="false" name="operatorflag" (click)="setAllSelect('operator',false)"> 不限 
+					</label>
+				</div>
+				<div class="mr20">
+					<label>
+						<input type="radio" [(ngModel)]="selectInfo.operator.flag" [value]="true" name="operatorflag" (click)="setAllSelect('operator',true)"> 自定义
+					</label>
+				</div>
+				<div class="rel" *ngIf="selectInfo.operator.flag === true">
+					<label class="checkbox-inline" *ngFor="let v of selectInfo.operator.data;let i = index">
+						<input type="checkbox" [(ngModel)]="v.selected" name="operator{{i}}" (click)="selectClick(selectInfo.operator,i,$event)">
+						<span>{{v.name}}</span>
+					</label>
+				</div>			
+			</div>
+		</div>
+		<div class="add-form-box" *ngIf="showTargetDetail">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">设备平台：</div>
+				<div class="mr20 ml20">
+					<label>
+						<input type="radio" [(ngModel)]="selectInfo.device.flag" [value]="false" name="deviceflag" (click)="setAllSelect('device',false)"> 不限 
+					</label>
+				</div>
+				<div class="mr20">
+					<label>
+						<input type="radio" [(ngModel)]="selectInfo.device.flag" [value]="true" name="deviceflag" (click)="setAllSelect('device',true)"> 自定义
+					</label>
+				</div>
+				<div class="rel" *ngIf="selectInfo.device.flag === true">
+					<label class="checkbox-inline" *ngFor="let v of selectInfo.device.data;let i = index">
+						<input type="checkbox" [(ngModel)]="v.selected" name="device{{i}}" (click)="selectClick(selectInfo.device,i,$event)">
+						<span>{{v.name}}</span>
+					</label>
+				</div>			
+			</div>
+		</div>
+		<div class="add-form-box" *ngIf="showTargetDetail">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">操作系统：</div>
+				<div class="mr20 ml20">
+					<label>
+						<input type="radio" [(ngModel)]="selectInfo.os.flag" [value]="false" name="osflag" (click)="setAllSelect('os',false)"> 不限 
+					</label>
+				</div>
+				<div class="mr20">
+					<label>
+						<input type="radio" [(ngModel)]="selectInfo.os.flag" [value]="true" name="osflag" (click)="setAllSelect('os',true)"> 自定义
+					</label>
+				</div>
+				<div class="rel" *ngIf="selectInfo.os.flag === true">
+					<label class="checkbox-inline" *ngFor="let v of selectInfo.os.data;let i = index">
+						<input type="checkbox" [(ngModel)]="v.selected" name="os{{i}}" (click)="selectClick(selectInfo.os,i,$event)">
+						<span>{{v.name}}</span>
+					</label>
+				</div>			
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+				<div>设置落地页链接</div>
+			</div>
+			<div class="add-form-box-right rel">
+			</div>
+		</div>
+		<div class="add-form-box">
+			<div class="add-form-box-left">
+			</div>
+			<div class="add-form-box-right rel">
+				<div class="textright width150">落地页名称：</div>
+				<div class="rel ml20">
+					<select class="form-control width320" title="{{campaign.landpageName}}" [(ngModel)]="campaign.landpageName" name="campaign.landpageName" validation [validations]="'required'" (change)='changeLandpageName()'>
+						<option *ngFor='let v of landpageArr' [ngValue]="v.name" title="{{v.name}}">{{cut.cutLongstring(v.name,18)}}</option>
+					</select>
+					<span class='camadd-caret'></span>
+				</div>	
+			</div>
+		</div>
+		<div *ngIf='campaign.landpageName' class='camadd-dayBudget-detail padding-top10 ml130'>
+			<div class="mt10 ml20 font14 color-gray5">落地页地址名称：{{ campaign.landpageName }}</div>
+			<div class="mt10 ml20 font14 color-gray5">落地页地址：{{ campaign.landpageUrl }}</div>
+			<div class="mt10 ml20 font14 color-gray5">是否监测：{{ isCheck }}</div>	
+			<div class="mt10 ml20 font14 color-gray5">监测码：<span *ngFor="let v of checkCodes" class="mr20 font14">{{ v }}</span></div>
+		</div>
+		<div class="add-btn-box">
+			<button class="btn btn-cancel mr20" type="button" (click)="cancel()">取消</button>
+			<button class="btn btn-primary mr20" type="button" (click)="save()">保存</button>
+			<button class="btn btn-primary mr20" type="button" (click)="creativeUploadList()">保存并上传创意</button>
+		</div>
+	</div>
+</div>
+

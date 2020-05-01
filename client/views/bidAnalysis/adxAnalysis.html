@@ -1,0 +1,166 @@
+<div class="row">
+    <div class="col-md-12 pr">
+        <div class="table-head clearfix">
+            <span class="tbhd-bar"></span>
+            <div class="font14 height30"> <span class="hover" [routerLink]="['/home/flowData']">数据中心</span> / adx流量分析</div>
+        </div>
+        <div class="table-head rel clearfix height70">	
+			<h2 class="mt20">adx流量分析</h2>
+		</div>
+        <div class="add-head-line"></div>
+        <div class="flex-center mt10 mb10">	
+            <button class="btn btn-default mark-head-btn border-gray3-1px border-right0 btn-primary">adx流量分析</button>
+            <button class="btn btn-default mark-head-btn border-gray3-1px border-right0" [routerLink]="['/home/bidAnalysis/nobidAnalysis']">不出价原因分析</button>
+            <button class="btn btn-default mark-head-btn border-gray3-1px" [routerLink]="['/home/bidAnalysis/bidAnalysis']">竞价参与分析</button>
+		</div>
+        <div class="flex-base mt30 mb20 ml20">
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">时间选择：</div>
+                <div class="width240 rel">
+                    <input *ngIf="adxflowRequest.type === '01'" type="text" class="form-control width240" value="{{ publicService.toFormalTime(adxflowRequest.startDate) + ' - ' + publicService.toFormalTime(adxflowRequest.endDate) }}" name="dayOptions" daterangepicker [options]="dayOptions" (applyDaterangepicker)="selectedDay($event.picker)">
+                    <input *ngIf="adxflowRequest.type === '02'" type="text" class="form-control width240" value="{{ publicService.toFormalTime(adxflowRequest.date) }}" name="hoursOptions" daterangepicker [options]="hoursOptions" (applyDaterangepicker)="selectedHours($event.picker)">
+                    <i class="icon-calendar time-icon"></i>
+                </div>
+            </div>
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">ADX：</div>
+                <div class="rel width240">
+                    <select class="form-control width240 color-gray5" [(ngModel)]="adxflowRequest.adx" name="adx">
+                        <option [ngValue]="undefined">请选择ADX</option>
+                        <option *ngFor="let v of adxs;let i = index;" [ngValue]="v.id">{{ v.name }}</option>
+                    </select>
+                    <span class='camadd-caret'></span>
+                </div>   
+            </div>
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">素材类型：</div>
+                <div class="rel width240">
+                    <select class="form-control width240 color-gray5" [(ngModel)]="adxflowRequest.materialType" name="materialType">
+                        <option [ngValue]="undefined">请选择素材类型</option>
+                        <option *ngFor="let v of materials;let i = index;" [ngValue]="v.type">{{ v.name }}</option>
+                    </select>
+                    <span class='camadd-caret'></span>
+                </div>   
+            </div>
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">素材尺寸：</div>
+                <div class="rel width240">
+                    <select class="form-control width240 color-gray5" [(ngModel)]="adxflowRequest.materialSize" name="materialSize">
+                        <option [ngValue]="undefined">请选择素材尺寸</option>
+                        <option *ngFor="let v of sizes;let i = index;" [ngValue]="v.size">{{ v.size }}</option>
+                    </select>
+                    <span class='camadd-caret'></span>
+                </div>   
+            </div>           
+        </div>
+        <div class="flex-base mb20 ml20 disSelected">
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">维度筛选：</div>
+                <label class="mr20 height38 line-height38 color-gray5 font14">
+                    <input type="checkbox" [(ngModel)]="adxAnalysisOptions[0].isExist" name="requestAmount">请求数
+                </label>
+                <label class="mr20 height38 line-height38 color-gray5 font14">
+                    <input type="checkbox" [(ngModel)]="adxAnalysisOptions[1].isExist" name="bidAmount">参与竞价数
+                </label>
+                <label class="mr20 height38 line-height38 color-gray5 font14">
+                    <input type="checkbox" [(ngModel)]="adxAnalysisOptions[2].isExist" name="winAmount">成交数
+                </label>
+                <label class="mr20 height38 line-height38 color-gray5 font14">
+                    <input type="checkbox" [(ngModel)]="adxAnalysisOptions[3].isExist" name="impressionAmount">展现数
+                </label>
+                <label class="mr20 height38 line-height38 color-gray5 font14">
+                    <input type="checkbox" [(ngModel)]="adxAnalysisOptions[4].isExist" name="bidRate">出价率
+                </label>
+                <label class="mr20 height38 line-height38 color-gray5 font14">
+                    <input type="checkbox" [(ngModel)]="adxAnalysisOptions[5].isExist" name="winRate">成交率
+                </label>
+            </div>
+            <button class="btn btn-primary height38" (click)="refreshTable()">查询</button>
+        </div>
+        <div class="flex-base font14 color-gray5 ml20 mt10 mb20">
+            <label class="mr20">
+                <input type="radio" [(ngModel)]="adxflowRequest.type" [value]="'01'" name="typeDay">按日筛选
+            </label>
+            <label>
+                <input type="radio" [(ngModel)]="adxflowRequest.type" [value]="'02'" name="typeHours">按小时筛选
+            </label>
+        </div>
+        <div class="width-100 mb40">
+            <div class="add-head-line"></div>
+            <div #amountEcharts class="width-100 height500"></div>
+        </div>
+        <div class="width-100 mb40">
+            <div class="add-head-line"></div>
+            <div #rateEcharts class="width-100 height500"></div>
+        </div>
+        <ngx-datatable #datatable
+            #datatable
+			[rows]="listAdxflows"
+			[columnMode]="'force'"
+			[draggable]="false"
+			[externalSorting]="true"
+			[externalPaging]="true"
+			[headerHeight]="50"
+			[rowHeight]="50"
+			[footerHeight]="50"
+            [limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo"
+			(page)="onPage($event)"
+            [messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+            [cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+            <ngx-datatable-column [resizeable]="false" [sortable]="false">
+                <template ngx-datatable-header-template let-row="row">
+                    <div class="width-100 height50 flex-center pointer" (click)="timeSort()">
+                        <div class="flex-base rel height50">
+                            <div class="ml8">时间</div>
+                            <div class="rel width20 height50">
+                                <span class='sort-caret-top left5 top19' [class.border-bottom-color-blue2]="isPlusSort"></span>
+                                <span class='sort-caret-bottom left5 top25' [class.border-top-color-blue2]="!isPlusSort"></span>
+                            </div> 
+                        </div>     
+                    </div>		
+				</template>
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.date }}">{{ row.date }}</div>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="请求数" prop="requestAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.requestAmount }}">{{ row.requestAmount }}</div>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="参与竞价数" prop="bidAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.bidAmount }}">{{ row.bidAmount }}</div>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="出价率" prop="bidRate" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ (row.bidRate*100).toFixed(2) + '%' }}">{{ (row.bidRate*100).toFixed(2) + "%" }}</div>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="成交数" prop="winAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.winAmount }}">{{ row.winAmount }}</div>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="成交率" prop="winRate" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ (row.winRate*100).toFixed(2) + '%' }}">{{ (row.winRate*100).toFixed(2) + "%" }}</div>			
+				</template>
+			</ngx-datatable-column>
+            <ngx-datatable-column name="展现数" prop="impressionAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell" title="{{ row.impressionAmount }}">{{ row.impressionAmount }}</div>			
+				</template>
+			</ngx-datatable-column>
+        </ngx-datatable>
+        <page-footer 
+			(outer)="update($event)"
+			[pageNo]="page.pageNo"
+			[pageSize]="page.pageSize"
+			[total]="page.total"
+		></page-footer>
+    </div>
+</div>

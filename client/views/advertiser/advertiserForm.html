@@ -1,0 +1,143 @@
+ <div class="white-wrapper pb300">
+	 <div class="add-head">
+		<div class="add-head-bar-box">
+			<span class="add-bar"></span>
+			<span><a [routerLink]="['/home/advertiser']">客户列表</a> / 新建客户</span>
+		</div>
+		<div class="add-title">新建客户</div>
+	</div>
+	<div class="mt50 font16 ml415">
+		<div class="add-form-box mb40">
+			<div class="textright width175">客户名称：</div>
+			<div class="rel ml20">
+				<input type="text" class="form-control width350" [(ngModel)]="advertiser.name" name="name" validation [validations]="'username;required'" placeholder="请输入客户名称">
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div class="add-form-box mb40">
+			<div class="textright width175">公司名称：</div>
+			<div class="rel ml20">
+				<input type="text" class="form-control width350" [(ngModel)]="advertiser.company" name="company" validation [validations]="'required;coname'" placeholder="请输入公司名称">
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div class="add-form-box mb40">
+			<div class="textright width175">所属行业：</div>
+			<div class="rel ml20">
+				<select class="form-control width350" [(ngModel)]="advertiser.industryId" name="industry" validation [validations]="'required'">
+					<option [ngValue]="undefined">请选择行业</option>
+					<option *ngFor="let v of industries" [ngValue]="v.id">{{ v.name }}</option>
+				</select>
+				<span class='camadd-caret'></span>
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div class="add-form-box mb40">
+			<div class="textright width175">选择ADX平台：</div>
+			<div class="rel ml20">
+				<div class="width350 border-gray3-1px height38 line-height38 pl10 font14">{{ adxNames ? adxNames : "请选择adx" }}</div>
+				<button class="btn btn-primary abs top0 right0 height38 line-height38 pl5" (click)="toggleShowADX()">{{ isShowADX ? "收起" : "展开" }}</button>	
+				<i class="triangle-empty-right-white abs right10 top15" [class.rotate135]="isShowADX"></i>
+				<div *ngIf="isShowADX" class="border-blue4-1px abs left0 top38 padding20 width350 z-index99 bgc-white">
+					<div *ngIf="isShowADX" class="flex-wrap mt10 mb20 disSelected">
+						<label class="alert-app-box font16 ell" *ngFor="let v of advertiserAdx;let i = index;">
+							<input type="checkbox" [(ngModel)]="v.value">{{ v.name }}
+						</label>
+					</div>
+					<div class="flex-end mb10">
+						<button class="btn btn-cancel mr10" (click)="adxCancel()">取消</button>
+						<button class="btn btn-primary" (click)="adxConfirm()">确定</button>
+					</div>
+				</div>		
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div *ngIf="isExit('8',advertiser.adxIds) || isExit('21',advertiser.adxIds)" class="add-form-box mb40">
+			<div class="textright width175">广告主主体资质名称：</div>
+			<div class="rel ml20">
+				<input type="text" class="form-control width350" [(ngModel)]="advertiser.legalName" name="legalName" validation [validations]="'required;username'" placeholder="营业执照名称">
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div *ngIf="isExit('8',advertiser.adxIds) || isExit('21',advertiser.adxIds)" class="add-form-box mb40">
+			<div class="textright width175">广告主主域名：</div>
+			<div class="rel ml20">
+				<input type="text" class="form-control width350" [(ngModel)]="advertiser.siteUrl" name="siteUrl" validation [validations]="'maxlength:100;site;required'" placeholder="官网地址">
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div *ngIf="isExit('8',advertiser.adxIds)" class="add-form-box mb40">
+			<div class="textright width175">网站名称：</div>
+			<div class="rel ml20">
+				<input type="text" class="form-control width350" [(ngModel)]="advertiser.siteName" name="siteName" validation [validations]="'maxlength:100;required'" placeholder="请输入网站名称">
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div *ngIf="isExit('8',advertiser.adxIds) || isExit('21',advertiser.adxIds)" class="add-form-box mb40">
+			<div class="textright width175">资质类型：</div>
+			<div class="rel ml20">
+				<select class="form-control width350" [(ngModel)]="advertiser.qualificationType" name="qualificationType" validation [validations]="'required'">
+					<option [ngValue]="undefined">请选择资质类型</option>
+					<option [ngValue]="'01'">营业执照</option>
+				</select>
+				<span class='camadd-caret'></span>
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div *ngIf="isExit('8',advertiser.adxIds)" class="add-form-box mb40">
+			<div class="textright width175">资质编号：</div>
+			<div class="rel ml20">
+				<input type="text" class="form-control width350" [(ngModel)]="advertiser.qualificationNo" name="qualificationNo" validation [validations]="'required;businesscode'" placeholder="营业执照编号">
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div *ngIf="isExit('8',advertiser.adxIds)" class="add-form-box mb40">
+			<div class="textright width175">资质有效期：</div>
+			<div class="rel ml20">
+				<input type="text" class="form-control width350" validation [validations]="'required'" [(ngModel)]="formalValidDate" name='validDate' daterangepicker [options]="validDate" (applyDaterangepicker)="applyValiddate($event.picker)">
+				<i class="icon-calendar time-icon"></i>
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div *ngIf="isExit('8',advertiser.adxIds)" class="add-form-box mb40">
+			<div class="textright width175">品牌名称：</div>
+			<div class="rel ml20">
+				<input type="text" class="form-control width350" [(ngModel)]="advertiser.brandName" name="brandName" validation [validations]="'required;maxlength:100'" placeholder="请输入品牌名称">
+			</div>	
+			<div class="color-red0 font20 height38 line-height38 pt3 ml10">*</div>	
+		</div>
+		<div *ngIf="isExit('21',advertiser.adxIds)" class="add-form-box mb40">
+			<div class="textright width175">QQ：</div>
+			<div class="rel ml20">
+				<input type="text" class="form-control width350" [(ngModel)]="advertiser.qq" name="qq" validation [validations]="'qqcode;selectNumber'" placeholder="请输入QQ">
+			</div>	
+		</div>
+		<div *ngIf="isExit('8',advertiser.adxIds) || isExit('21',advertiser.adxIds)" class="flex-base mb40 mt20 color-gray5">
+			<div class="textright width175">资质：</div>
+			<div class="rel ml20">
+				<label *ngIf="!advertiser.qualificationPath" class="dispaly-block rel border-gray3-1px bgc-gray1 width185 height130 pointer">
+					<div class="width165 height110 margin-center column-center rel dashed-gray3-1px textcenter">
+						<span class="icon-add22 font30 dispaly-inline-block mt30"></span>
+						<div class="">点击添加营业执照</div>
+					</div>
+					<input type="file" class="dispaly-none" #file ng2FileSelect [uploader]="uploader">
+				</label>
+				<div *ngIf="advertiser.qualificationPath" class="rel advertiser-upload">
+					<img class="width185 height130" src="{{ baseImgUrl + advertiser.qualificationPath }}">
+					<div class="abs width185 height130 top0 left0 bgc-black opacity08 dispaly-none pointer" (click)="removeQualificationPath()">
+						<span class="icon-delete-012 center abs"></span>
+					</div>
+				</div>					
+			</div>	
+			<div class="color-red0 font20 height130 line-height130 pt3 ml10">*</div>	
+		</div>
+		<div class="add-form-box mb40">
+			<div class="width175"></div>
+			<div class="flex-end width350 ml20">
+				<button class="btn btn-cancel mr10" (click)="cancel()">取消</button>
+				<button class="btn btn-primary" (click)="confirm()">保存</button>
+			</div>	
+		</div>
+		
+	</div>
+</div>

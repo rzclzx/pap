@@ -1,0 +1,83 @@
+<div class="row">
+    <div class="col-md-12 pr">
+        <div class="table-head clearfix">
+            <span class="tbhd-bar"></span>
+            <div class="font14 height30"> <span class="hover" [routerLink]="['/home/flowData']">数据中心</span> / 竞价参与分析</div>
+        </div>
+        <div class="table-head rel clearfix height70">	
+			<h2 class="mt20">竞价参与分析</h2>
+		</div>
+        <div class="add-head-line"></div>
+        <div class="flex-center mt10 mb10">	
+            <button class="btn btn-default mark-head-btn border-gray3-1px border-right0" [routerLink]="['/home/bidAnalysis/adxAnalysis']">adx流量分析</button>
+            <button class="btn btn-default mark-head-btn border-gray3-1px border-right0" [routerLink]="['/home/bidAnalysis/nobidAnalysis']">不出价原因分析</button>
+            <button class="btn btn-default mark-head-btn border-gray3-1px btn-primary">竞价参与分析</button>
+		</div>
+        <div class="flex-base mt30 mb20 ml20">
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">时间选择：</div>
+                <div class="width240 rel">
+                    <input type="text" class="form-control width240" value="{{ publicService.toFormalTime(bidRequest.time) + '    ' + publicService.FormalTimeHoursandminute(bidRequest.time) + ' - ' + publicService.FormalTimeHoursandminute(bidRequest.time + 1000*60*60) }}" name="timeOptions" daterangepicker [options]="timeOptions" (applyDaterangepicker)="selectedTime($event.picker)">
+                    <i class="icon-calendar time-icon"></i>
+                </div>
+            </div>
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">项目名称：</div>
+                <div class="rel width240">
+                    <select class="form-control width240 color-gray5" [(ngModel)]="bidRequest.projectId" name="projectId" (change)="selectedProject()">
+                        <option [ngValue]="undefined">请选择项目名称</option>
+                        <option *ngFor="let v of projects;let i = index;" [ngValue]="v.id" cutstring [cutLength]="25">{{ v.name }}</option>
+                    </select>
+                    <span class='camadd-caret'></span>
+                </div>   
+            </div>
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">活动名称：</div>
+                <div class="rel width240">
+                    <select class="form-control width240 color-gray5" [(ngModel)]="bidRequest.campaignId" name="campaignId">
+                        <option [ngValue]="undefined">请选择活动名称</option>
+                        <option *ngFor="let v of campaigns;let i = index;" [ngValue]="v.id"  cutstring [cutLength]="25">{{ v.name }}</option>
+                    </select>
+                    <span class='camadd-caret'></span>
+                </div>   
+            </div>
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">ADX：</div>
+                <div class="rel width240">
+                    <select class="form-control width240 color-gray5" [(ngModel)]="bidRequest.adx" name="adx">
+                        <option [ngValue]="undefined">请选择ADX</option>
+                        <option *ngFor="let v of adxs;let i = index;" [ngValue]="v.id">{{ v.name }}</option>
+                    </select>
+                    <span class='camadd-caret'></span>
+                </div>   
+            </div>
+        </div>
+        <div class="flex-base mb20 ml20">
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">素材类型：</div>
+                <div class="rel width240">
+                    <select class="form-control width240 color-gray5" [(ngModel)]="bidRequest.materialType" name="materialType">
+                        <option [ngValue]="undefined">请选择素材类型</option>
+                        <option *ngFor="let v of materials;let i = index;" [ngValue]="v.type">{{ v.name }}</option>
+                    </select>
+                    <span class='camadd-caret'></span>
+                </div>   
+            </div>
+            <div class="flex-base mr20">
+                <div class="height38 line-height38 color-gray5 font14">素材尺寸：</div>
+                <div class="rel width240">
+                    <select class="form-control width240 color-gray5" [(ngModel)]="bidRequest.materialSize" name="materialSize">
+                        <option [ngValue]="undefined">请选择素材尺寸</option>
+                        <option *ngFor="let v of sizes;let i = index;" [ngValue]="v.size">{{ v.size }}</option>
+                    </select>
+                    <span class='camadd-caret'></span>
+                </div>   
+            </div>
+            <button class="btn btn-primary height38" (click)="render()">查询</button>
+        </div>
+        <div class="width-100 mb40">
+            <div class="add-head-line"></div>
+            <div #bidEcharts class="width-100 height500"></div>
+        </div>
+    </div>
+</div>

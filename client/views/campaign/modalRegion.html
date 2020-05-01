@@ -1,0 +1,60 @@
+<div class="clearfix area">
+	<div class="area-box area-box-left">
+		<div class="rel ofh">
+			<input #searchInput type="text" class="form-control" (focus)="addEvent()" (blur)="removeEvent()">
+		    <i class="icon-search icon-input-right clickAble pointer" (click)="search()"></i>
+		</div>		
+		<ul class="border-gray3-1px mt10">
+			<li *ngFor="let v of regions;let i = index;"  class="mb10">
+				<div class="disSelected">
+					<div class="flex-between-center ml10">
+						<div class="flex-start-center pointer" (click)="toggleRegion(v)">
+							<i class="triangle-empty-right mr10" [class.opacity0]="!v.citys" [class.rotate135]="v.show"></i>
+						    <span>{{ v.name }}</span>
+						</div>					
+						<input type="checkbox" [(ngModel)]="v.checked" (change)="selectAll(v)" *ngIf="!v.selected" />
+						<span class="icon-checked2 color-gray5 mr10" *ngIf="v.selected"></span>
+					</div>
+					<ul *ngIf="v.citys && v.show" class="mt10">
+						<li *ngFor="let v1 of v.citys" class="flex-between-center mb10">
+							<span class="ml40">{{ v1.name }}</span>
+							<input type="checkbox" [(ngModel)]="v1.checked" (change)="selectOne(v.citys,v)" *ngIf="!v1.selected" />
+							<span class="icon-checked2 color-gray5 mr10" *ngIf="v1.selected"></span>
+						</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div class="area-act">
+		<ul>
+			<li><button class="btn btn-primary" (click)="setRegionSelected()">添加</button></li>
+			<li><button class="btn btn-primary" (click)="selectedAll()">全选</button></li>
+		</ul>
+	</div>
+	<div class="area-box area-box-right">
+		<div class="flex-between width-100 height38 line-height38">
+			<div>已选择</div>
+			<div class="color-blue3 hover" (click)="clearRegion()">清空选择</div>
+		</div>
+		<ul  class="border-gray3-1px mt10">
+			<li *ngFor="let v of selectedList;let i = index;" class="mb10">
+				<div class="disSelected">
+					<div class="flex-between-center ml10">
+						<div class="flex-start-center pointer"  (click)="toggleRegion(v)">
+							<i class="triangle-empty-right mr10" [class.opacity0]="!v.citys" [class.rotate135]="v.show"></i>
+						    <span>{{ v.name }}</span>
+						</div>					
+						<i class="icon-delete2 color-gray5 mr10 pointer" (click)="deleteRegion(v)"></i>
+					</div>				
+					<ul *ngIf="v.citys && v.show" class="mt10">
+						<li *ngFor="let v1 of v.citys" class="flex-between-center  mb10">
+							<span class="ml40">{{ v1.name }}</span>
+							<i class="icon-delete2 color-gray5 mr10 pointer" (click)="deleteCitys(v,v1)"></i>
+						</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>

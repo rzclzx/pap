@@ -1,0 +1,43 @@
+<div class="total-header">
+	<div class="total-header-right">
+		<div class="font14">您好！admin</div>
+		<div class="flex-around font14">
+			<i class="icon-msg-01 mr5"></i>
+			<div>消息通知</div>
+		</div>
+		<div class="flex-around font14">
+			<i class="icon-help mr5"></i>
+			<div>帮助中心</div>
+		</div>
+		<div class="font14 hover" (click)="logout()">退出</div>
+	</div>
+</div>
+<div class="rel height60 tag-total-nav-box">
+	<div class="total-nav disSelected">
+		<div class="total-nav-main">
+			<div class="flex-start-center height60 width-20">
+				<img class="height35" src="./dist/client/images/logo.png" />
+			</div>
+			<div class="flex-start-center width-80 height60">
+				<div (mouseout)="removeChilds()" (mouseover)="showChilds(i)" *ngFor="let v of navMain;let i = index;" class="total-nav-main-list" [class.total-nav-main-current]="i === currentArr[0]" (click)="changeCurrent('main',i)">{{ v.name }}</div>
+			</div>
+		</div>
+	</div>
+	<div #childs *ngFor="let n of navMain;let j = index;" class="total-nav-child disSelected" (mouseover)="showChilds()" (mouseout)="removeChilds()">
+		<div class="width-20 height45"></div>
+		<div class="flex-start-center width-80 height45">
+			<div *ngFor="let v of n.childs;let i = index;" class="total-nav-child-list" [class.total-nav-child-current]="i === currentArr[1] && j === currentArr[0]" (click)="changeCurrent('child',i,j)">{{ v.name }}</div>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class="content">
+		<div id="content-wrapper">
+			<router-outlet></router-outlet>
+		</div>
+	</div>
+</div>
+<div class="total-footer">
+	版权所有 盗版必究
+</div>

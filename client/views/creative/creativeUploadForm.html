@@ -1,0 +1,198 @@
+<div class="white-wrapper">
+	<div class="add-head">
+		<div class="add-head-bar-box">
+			<span class="add-bar"></span>
+			<span><span  routerLinkActive="hover" [routerLink]="['/home/project']">项目列表</span>/ <span class="hover" (click)="gotoCampaignList()">活动列表</span>/ <span class="hover" [routerLink]="['/home/project/creativeUploadList',this.campaignId]">创意列表 </span></span>
+		</div>
+		<div class="add-title">上传创意</div>
+	</div>
+	<!--<div class="process-bar ofh rel">
+		<div class="col-sm-4 row-center">
+			<div class="col-sm-1 creative_top">
+				<div class="sm-creative_top clearfix">
+					<div class="bar left"></div>
+					<div class="circle bg-warning icon-pass font20"></div>
+					<div class="bar bg-warning right"></div>
+				</div>
+				<div class="top_word">
+					创建项目
+				</div>
+			</div>
+			<div class="col-sm-1 creative_top">
+				<div class="sm-creative_top clearfix">
+					<div class="bar bg-warning left"></div>
+					<div class="circle bg-warning icon-pass font20"></div>
+					<div class="bar bg-warning right"></div>
+				</div>
+				<div class="top_word">
+					创建活动
+				</div>
+			</div>
+			<div class="col-sm-1 creative_top">
+				<div class="sm-creative_top clearfix">
+					<div class="bar bg-warning left"></div>
+					<div class="circle bg-warning"><span class="pro-active">...</span></div>
+				</div>
+				<div class="top_word blue">
+					上传创意
+				</div>
+			</div>
+		</div>
+	</div>-->
+	<div *ngIf="!id" class="tab-nav-box white-wrap-p0">
+		<ul class="tab-nav clearfix">
+			<template ngFor let-v [ngForOf]="adTypeInfo"> 
+				<li [routerLink]="['/home/project/creativeUploadAdd',campaignId,v.name]" *ngIf="v.isShow" routerLinkActive="active"><a href="javascript:;">{{v.title}}</a></li>
+			</template>
+		</ul>
+	</div>
+	<div class="table-head clearfix">
+		<span class="tbhd-bar"></span>
+		<h2 [ngSwitch]="type"><span *ngSwitchCase="'image'">图片</span><span *ngSwitchCase="'video'">视频</span><span *ngSwitchCase="'infoflow'">信息流</span>创意</h2>
+	</div>
+	<ngx-datatable
+		#mydatatable
+		[rows]="tmpls"
+		[columns]="currentColumns"
+		[columnMode]="'force'"
+		[rowHeight]="'auto'"
+		[detailRowHeight]="'auto'"
+		[headerHeight]="'50'"
+		[selected]="selected"
+		[rowDetailTemplate]="rowDtlTmpl"
+		[messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+		(activate)="onActivate($event)">
+	</ngx-datatable>
+	<div class="add-btn-box-right">
+		<div class="mr-10">
+			<button class="btn btn-cancel mr20" type="button" (click)="cancel()">返回创意列表</button>
+		    <!--<button class="btn btn-primary mr20" type="button" (click)="saveAndAudit()">保存并提交审核</button>-->
+		</div>	
+	</div>
+</div>
+<!-- 尺寸模板 -->
+<template #sizeTmpl let-row="row" let-value="value" let-i="index">
+	<span *ngIf="row.width">{{ row.width+"*"+row.height }}</span>
+	<span *ngIf="row.icon">{{ row.icon.width+"*"+row.icon.height }}</span>
+	<span *ngIf="!row.width && imgSizes[tmpls.indexOf(row)] && imgSizes[tmpls.indexOf(row)].length >=1">
+		<span *ngFor="let v of imgSizes[tmpls.indexOf(row)]">{{ "&nbsp;&nbsp;&nbsp;" + v.width+"*"+v.height }}</span>
+	</span>
+</template>
+<!-- APP模板 -->
+<template #imageFormatsTmpl let-row="row" let-value="value" let-i="index">
+	{{row.formats|imageFormats}}
+</template>
+<template #videoFormatsTmpl let-row="row" let-value="value" let-i="index">
+	{{row.formats|videoFormats}}
+</template>
+<!-- 详情模板 -->
+<template #rowDtlTmpl let-row="row" let-value="value" let-index="index">
+    <div class="creative-dtl clearfix" [ngSwitch]="type">
+		<div class="upload-list clearfix" >
+			<div class="upload-left" *ngSwitchCase="'image'">
+				<template [ngTemplateOutlet]="uploadBoxTmpl" [ngOutletContext]="{ row:row, type:type, fileType:'image', isIcon:false, uploader:uploadInfos[type][row.$$index].image }">
+				</template>
+			</div>
+			<div class="upload-left" *ngSwitchCase="'infoflow'">
+				<template *ngIf="row.icon" [ngTemplateOutlet]="uploadBoxTmpl" [ngOutletContext]="{ row:row.icon, type:type, fileType:'image', isIcon:true, uploader:uploadInfos[type][row.$$index].icon }">
+				</template>
+				<template *ngFor="let v of imageArr[row.$$index]" [ngTemplateOutlet]="uploadBoxTmpl" [ngOutletContext]="{ row:row['image'+v], type:type, fileType:'image', isIcon:false, uploader:uploadInfos[type][row.$$index]['image'+v] }">
+				</template>
+			</div>
+			<div class="upload-left" *ngSwitchCase="'video'">
+				<template [ngTemplateOutlet]="uploadBoxTmpl" [ngOutletContext]="{row:row.imageTmpl,type:type,fileType:'image',isIcon:false,uploader:uploadInfos[type][row.$$index].image}"></template>
+				<template [ngTemplateOutlet]="uploadBoxTmpl" [ngOutletContext]="{row:row,type:type,fileType:'video',isIcon:false,uploader:uploadInfos[type][row.$$index].video}"></template>
+			</div>
+			<div class="upload-right">
+				<form class="form-common">
+					
+					<div class="clearfix mb30" >
+						<span class="control-span">价格：<span class="B">*</span></span>
+						<div class="left">
+							<input type="text" [(ngModel)]="uploadInfos[type][row.$$index].creative.price" [validName]="'价格'" validation [validations]="'required;maxlength:6;rate;plusFloat'" name="price" class="form-control l320" placeholder="不超过6个字符">
+						</div>
+					</div>
+					<div class="clearfix mb30" *ngIf="type==='infoflow'">
+						<span class="control-span">推广标题：<span class="B">*</span></span>
+						<div class="left">
+							<input type="text" [(ngModel)]="uploadInfos.infoflow[row.$$index].creative.title" [validName]="'推广标题'" validation [validations]="'required;maxlength:'+row.maxTitle" name="title" class="form-control l320" placeholder="不超过{{row.maxTitle}}个字符">
+						</div>
+					</div>
+					<div class="clearfix mb30" *ngIf="type==='infoflow' && row.mustDescription == '1'">
+						<span class="control-span">描述：<span class="B" *ngIf="row.mustDescription == '1'">*</span></span>
+						<div class="left">
+							<textarea [(ngModel)]="uploadInfos.infoflow[row.$$index].creative.description" [validName]="'描述'" validation [validations]="'maxlength:'+row.maxDescription+(row.mustDescription == '1'?';required':'')" name="description" class="form-control l320 h110" placeholder="不超过{{row.maxDescription}}个字符"></textarea>
+						</div>
+					</div>
+					<div class="clearfix mb30" *ngIf="type==='infoflow' && row.mustCtaDescription == '1'">
+						<span class="control-span">推广描述：<span class="B" *ngIf="row.mustCtaDescription == '1'">*</span></span>
+						<div class="left">
+							<textarea [(ngModel)]="uploadInfos.infoflow[row.$$index].creative.ctaDescription" [validName]="'推广描述'" validation [validations]="'maxlength:'+row.maxCtaDescription+(row.mustCtaDescription == '1'?';required':'')" name="ctaDescription" class="form-control l320 h110" placeholder="不超过{{row.maxCtaDescription}}个字符"></textarea>
+						</div>
+					</div>
+					<div class="ml415">
+						<button class="btn btn-primary" type="button" (click)="save(row.$$index)">保存</button>
+					</div>
+				</form>
+			</div>
+		</div>
+    </div>
+</template>
+<template #uploadBoxTmpl let-type="type" let-row="row" let-uploader="uploader" let-fileType="fileType" let-isIcon="isIcon">
+	<div class="upload-left-creative mr35">
+		<!--<p class="tit">
+			{{row.width+"*"+row.height}}{{fileType==="video" ? "视频" : "图片"}}创意
+		</p>-->
+		<div class="box" *ngIf="uploader && uploader.isHasFile">
+			<img src="" [src]="baseFileUrl+uploader.path" *ngIf="uploader.isHasFile && fileType ==='image'">
+			<video src="" controls="controls" [src]="baseFileUrl+uploader.path" *ngIf="uploader.isHasFile && fileType ==='video'"></video>
+			<div class="delete"><i class="icon-delete-01" (click)="uploader.deleteFile()"></i></div>
+		</div>
+		<div class="box1" *ngIf="uploader && !uploader.isHasFile">
+			<div class="box-thumb-in">
+				<p class="list-one"><span>{{row.width}}</span>*<span>{{row.height}}{{fileType==="video" ? "" : "px"}}</span></p>
+				<p class="list-two">(创意支持{{row.formats|imageFormats|uppercase}})</p>
+				<div class="btn btn-primary" style="position: relative;">
+					上传{{fileType==="video" ? "视频" : "图片"}}
+				<input type="file" ng2FileSelect [uploader]="uploader.uploader" class="btn btn-primary" style="top: 0px; bottom: 0px; left: 0px; right: 0px; width: 100%; opacity: 0; position: absolute;"></div>
+				<button class="btn btn-primary" (click)="import(row,uploader,fileType)">导入{{fileType==="video" ? "视频" : "图片"}}</button>
+				
+			</div>
+		</div>
+		<!--<div class="box-tip" *ngIf="type==='infoflow'"><i class="icon-tip"></i>此图将出现在{{isIcon ? "icon" : "图片"}}位置</div>-->
+	</div>
+</template>
+<modal #importModal [backdrop]="'static'">
+	<modal-header>
+		<h4 class="modal-title color-white">导入图片</h4>
+	</modal-header>
+	<modal-body>
+		<div class="add-form-box">
+			<div class="font16">我的创意：</div>
+			<div class="rel width175 mr20">
+				<select class="form-control width175" [(ngModel)]="project" name="project" (change)="selectedProject()" title="{{ project && project.name }}">
+					<option [ngValue]="undefined">请选择项目</option>
+					<option cutstring [cutLength]="15" *ngFor="let v of projects" [ngValue]="v">{{ v.name }}</option>
+				</select>
+				<span class='camadd-caret'></span>
+			</div>
+			<div class="rel width175">
+				<select class="form-control  width175" [(ngModel)]="campaign" name="campaign" (change)="selectedCampaign()" title="{{ campaign && campaign.name }}">
+					<option [ngValue]="undefined">请选择活动</option>
+					<option cutstring [cutLength]="15" *ngFor="let v of campaigns" [ngValue]="v">{{ v.name }}</option>
+				</select>
+				<span class='camadd-caret'></span>
+			</div>
+		</div>
+		<div class="flex-wrap">
+			<div  #list *ngFor="let v of materials;let i = index;" class="dispaly-block creative-add-import-img-box pointer" [class.border-blue4-1px]="v.ischoice" (click)="importChoose(i)">
+				<img class="creative-add-import-img" [src]="baseFileUrl + v.path">
+				<div class="height30 line-height30 textcenter">{{ currentRow.width + "*" + currentRow.height }}</div>
+			</div>		
+		</div>
+	</modal-body>
+	<modal-footer>
+		<button type="button" class="btn btn-default" (click)="importCancel()">取消</button>
+		<button type="button" class="btn btn-primary" (click)="importConfirm()">确定</button>
+	</modal-footer>
+</modal>

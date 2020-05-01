@@ -1,0 +1,159 @@
+<div (click)="clearWrite()">
+	 <div class="add-head">
+		<div class="add-head-bar-box">
+			<span class="add-bar"></span>
+			<span>
+				<span class="hover" [routerLink]="['/home/project']">项目列表</span>
+                <span class="hover" [routerLink]="['/home/project/mark',projectId,'staticval']">/ 评分</span>
+                <span class="hover" [routerLink]="['/home/project/mark',projectId,'rule']">/ 规则组列表</span>
+                <span class="hover" [routerLink]="['/home/project/mark',projectId,'ruleDetail',ruleGroupId]" title="{{ ruleGroup.name }}">/ {{ cutLongstring(ruleGroup.name) }}</span>
+				<span>/ 新建规则</span>
+			</span>
+		</div>
+		<div class="add-title">新建规则</div>
+	</div>
+	<div class="width1200 ml60">
+		<div class="width-100 ml20 mt40">
+			<div class="flex-base">
+				<div class="font16 height38 line-height38">规则名称：</div>
+				<div class="err-right-box flex-base">
+					<input type="text" class="form-control width220" name="name" [(ngModel)]="ruleDetail.name" name="ruleName" validation [validations]="'required;ruleName'" />
+				</div>           
+			</div>
+		</div>
+		<div class="width-100 ml20 mt20">
+			<div class="flex-base">
+				<div class="font16 height38 line-height38">触发条件：</div>
+				<div class="width800">
+					<button *ngIf="ruleDetail.triggerCondition === undefined" class="dispaly-block width70 height38 btn btn-primary" (click)="addCondition()">新建</button>
+					<div *ngIf="ruleDetail.triggerCondition === undefined" class="font14 mt20 ml20">全部</div>
+				</div>
+			</div>
+		</div>
+		<div class="width-100 ml20 mt20">
+			<div class="flex-base" *ngIf="ruleDetail.triggerCondition !== undefined">
+				<div class="mr10 rel">
+					<div class="font14 mb10">公式</div>
+					<div class="form-control width350 ell pointer" [class.border-blue4-1px]="isWriteCondition" title="{{ ruleDetail.triggerCondition }}" (click)="isWrite($event)">{{ ruleDetail.triggerCondition }}</div>
+					<div class="width600 border-gray3-1px bgc-white abs left0 top68 z-index99 padding10"  *ngIf="isWriteCondition" (click)="myStopPropagation($event)">
+						<div class="flex-base padding10">
+							<button *ngFor="let v of signs;let i = index;" class="btn btn-default width45 min-width45 height45 min-height45 font20 color-bluebtn textcenter mr10" (click)="conditionWrite($event,v)" (mousedown)="addBtnstyle($event)">{{ v.name }}</button>
+						</div>
+						<div class="flex-wrap padding10">
+							<button *ngFor="let v of staticSigns;let i = index;" class="btn btn-default height45 min-height45 font14 color-gray5 textcenter mr10 mt20" (click)="conditionWrite($event,v)" (mousedown)="addBtnstyle($event)">{{ v.name }}</button>
+							<button *ngFor="let v of effectFields;let i = index;" cutstring [cutLength]="10" class="btn btn-default height45 min-height45 font14 color-gray5 textcenter mr10 mt20" (click)="conditionWrite($event,v)" (mousedown)="addBtnstyle($event)">{{ v.name }}</button>
+							<button *ngFor="let v of project.staticvals;let i = index;" cutstring [cutLength]="10" class="btn btn-default height45 min-height45 font14 color-gray5 textcenter mr10 mt20" (click)="conditionWrite($event,v)" (mousedown)="addBtnstyle($event)">{{ v.name }}</button>					
+						</div>
+					</div>
+				</div> 
+				<div class="mr10">
+					<div class="font14 mb10">关系</div>
+					<div class="width90 rel">
+						<select class="form-control  width90" [(ngModel)]="ruleDetail.relation">
+							<option *ngFor="let v of relations" [ngValue]="v">{{ v }}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>	
+				</div>  
+				<div class="mr10">
+					<div class="font14 mb10">参考值</div>
+					<div class="width175 rel">
+						<select class="form-control  width175" [(ngModel)]="ruleDetail.staticvalId" name="staticvalId" validation [validations]="'required'">
+							<option *ngFor="let v of project.staticvals" [ngValue]="v.id" cutstring [cutLength]="15">{{ v.name }}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>	
+				</div>   
+				<div class="mr10">
+					<div class="font14 mb10 color-blue3 hover mt38" (click)="clearCondition($event)">清除公式</div>
+				</div>    
+				<div class="mr10">
+					<div class="font14 mb10 color-blue3 hover mt38" (click)="deleteCondition()">删除</div>
+				</div>     
+			</div>
+		</div>
+
+		<div class="width-100 ml20 mt20">
+			<div class="flex-base">
+				<div class="font16 height38 line-height38">评估公式：</div>
+				<div class="width800">
+					<button class="dispaly-block width70 height38 btn btn-primary" (click)="addFormula()">新建</button>
+				</div>
+			</div>
+		</div>
+		<div class="width-100 ml20 mt20">
+			<div class="flex-base" *ngIf="ruleDetail.formulas.length > 0">
+				<div class="mr10">
+					<div class="font14 mb10 width175">名称</div>
+				</div> 
+				<div class="mr10">
+					<div class="font14 mb10 width350">公式</div>
+				</div>
+				<div class="mr10">
+					<div class="font14 mb10 width90">负向游标</div>
+				</div> 
+				<div class="mr10">
+					<div class="font14 mb10 width175">参考值</div>
+				</div>   
+				<div class="mr10">
+					<div class="font14 mb10 width90">正向游标</div>
+				</div>                       
+				<div class="mr10">
+					<div class="font14 mb10 width90">权重</div>
+				</div>   
+			</div>
+			<div *ngIf="showList">
+				<div class="flex-base height38 mb50" *ngFor="let v of ruleDetail.formulas;let i = index">
+					<div class="mr10 err-nowrap-box">
+						<input type="text" class="form-control width175" [(ngModel)]="v.name" [attr.name]="'name'+i" validation [validations]="'required;ruleName'">
+					</div> 
+					<div class="mr10 rel">
+						<div class="form-control width350 pointer ell" title="{{ v.formula }}" [class.border-blue4-1px]="isRulewrite[i]" (click)="isWrite($event,i)">{{ v.formula }}</div>
+						<div class="width600 border-gray3-1px bgc-white abs left0 top38 z-index99 padding10" *ngIf="isRulewrite[i]" (click)="myStopPropagation($event)">
+							<div class="flex-base padding10">
+								<button *ngFor="let v of signs;let i = index;" class="btn btn-default width45 min-width45 height45 min-height45 font20 color-bluebtn textcenter mr10" (click)="ruleWrite($event,v)" (mousedown)="addBtnstyle($event)">{{ v.name }}</button>
+							</div>
+							<div class="flex-wrap padding10">
+								<button *ngFor="let v of staticSigns;let i = index;" class="btn btn-default height45 min-height45 font16 color-gray5 textcenter mr10 mt20" (click)="ruleWrite($event,v)" (mousedown)="addBtnstyle($event)">{{ v.name }}</button>
+								<button *ngFor="let v of effectFields;let i = index;"  cutstring [cutLength]="10" class="btn btn-default height45 min-height45 font16 color-gray5 textcenter mr10 mt20" (click)="ruleWrite($event,v)" (mousedown)="addBtnstyle($event)">{{ v.name }}</button>
+								<button *ngFor="let v of project.staticvals;let i = index;"  cutstring [cutLength]="10" class="btn btn-default height45 min-height45 font16 color-gray5 textcenter mr10 mt20" (click)="ruleWrite($event,v)" (mousedown)="addBtnstyle($event)">{{ v.name }}</button>
+							</div>
+						</div>
+					</div>
+					<div class="mr10 rel err-blank-box">
+						<input type="text" class="form-control width90" [(ngModel)]="v.negativeVernier" [attr.name]="'negativeVernier'+i" validation [validations]="'required;numberFloat'">
+						<div class="abs width142 height18 border-gray3-1px border-top0 top38 left45"></div>
+						<div class="abs width-100 textcenter top60">0</div>
+					</div> 
+					<div class="mr10 rel">
+						<div class="width175 rel">
+							<select class="form-control  width175" [(ngModel)]="v.staticvalId"  [attr.name]="'staticvalId'+i" validation [validations]="'required'">
+								<option *ngFor="let v of project.staticvals" [ngValue]="v.id"  cutstring [cutLength]="15">{{ v.name }}</option>
+							</select>
+							<span class='camadd-caret'></span>
+						</div>		
+						<div class="abs width-100 textcenter top60">50</div>
+					</div>   
+					<div class="mr10 rel err-blank-box">
+						<input type="text" class="form-control width90" [(ngModel)]="v.forwardVernier" [attr.name]="'forwardVernier'+i"  validation [validations]="'required;numberFloat'">
+						<div class="abs width142 height18 border-gray3-1px border-top0 border-left0 top38 right45"></div>
+						<div class="abs width-100 textcenter top60">100</div>
+					</div>                     
+					<div class="mr10 err-blank-box">
+						<input type="text" class="form-control width90" [(ngModel)]="v.weight" [attr.name]="'weight'+i" validation [validations]="'required;positiveFloat'">
+					</div> 
+					<div class="font14 mb10 color-blue3 hover height38 line-height38 mr10" (click)="clearFormula($event,i)">清除公式</div>
+					<div class="font14 mb10 color-blue3 hover height38 line-height38" (click)="deleteFormula(i)">删除</div>
+				</div>
+			</div>		
+		</div>
+		<div class="width-100 pb600">
+			<div class="flex-end mr70 mt80">
+				<button type="button" class="btn btn-default mr10" [routerLink]="['/home/project/mark',projectId,'ruleDetail',ruleGroupId]">取消</button>
+			    <button type="button" class="btn btn-primary" (click)="ruleConfirm()">确定</button>
+			</div>
+		</div>
+		
+	</div>
+	
+</div>

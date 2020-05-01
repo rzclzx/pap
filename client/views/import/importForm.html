@@ -1,0 +1,50 @@
+<div class="white-wrapper ofh rel">
+    <div class="add-head">
+		<div class="add-head-bar-box">
+			<span class="add-bar"></span>
+			<span><span routerLinkActive="hover" [routerLink]="['/home/import']">转化数据导入</span> / 上传文件</span>
+		</div>
+		<div class="add-title">上传文件</div>
+	</div>
+    <form class="add-form">
+        <div class="add-form-box">
+            <div class="add-form-box-left">
+				<div>选择项目：</div>
+			</div>
+			<div class="add-form-box-right">
+                <div class="width293 rel">
+                    <select class="form-control  width293" [(ngModel)]="project" name="project" (change)="selected()">
+                        <option [ngValue]="undefined">请选择项目</option>
+                        <option *ngFor="let v of projects" [ngValue]="v" cutstring [cutLength]="28">{{ v.name }}</option>
+                    </select>
+                    <span class='camadd-caret'></span>
+                </div>			
+			</div>
+        </div>
+        <div class="flex-center height70">
+            <div class="add-form-box-left">
+				<div>下载模板：</div>
+			</div>
+			<div class="add-form-box-right rel">
+                <a href="{{ downloadUrl }}" [class.dispaly-none]="!choseProject" download="{{ fileName }}"><img src="./dist/client/images/excel.png" class="width70 height70 pointer"></a>
+                <span [class.dispaly-none]="choseProject" (click)="projectAlert()"><img src="./dist/client/images/excel.png" class="width70 height70 pointer"></span>
+			</div>
+        </div>
+        <div class="add-form-box">
+            <div class="add-form-box-left">
+				<div>上传文件：</div>
+			</div>
+			<div class="add-form-box-right rel">
+				<input type="file" class="form-control import-add-form-file" #file ng2FileSelect [uploader]="uploader">
+                <div class="import-add-form-file-show abs">
+                    <div class="import-add-form-file-show-left pl14 color-black6 font14 ell">{{ uploadMessage }}</div>
+                    <div class="import-add-form-file-show-right font14 color-blue3">选择上传文件</div>
+                </div>
+			</div>
+        </div>
+        <div class="add-btn-box">
+			<button class="btn btn-cancel mr20" type="button" [routerLink]="['/home/import']">取消</button>
+			<button class="btn btn-primary mr20" type="button" (click)="save()">确定</button>
+		</div>
+    </form>
+</div>

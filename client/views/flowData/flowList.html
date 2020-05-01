@@ -1,0 +1,198 @@
+<div class="row">			
+	<div class="col-md-12 pr">
+		<div class="table-head clearfix">
+			<span class="tbhd-bar"></span>
+			<div class="font14 height30">数据中心</div>
+		</div>
+		<div class="table-head rel clearfix height70">	
+			<h2 class="mt20">流量数据列表</h2>
+			<button class="tbhd-btn btn btn-primary bg-btn" (click)="exportList()">导出报表</button>
+		</div>
+		<div class="add-head-line"></div>
+		<form class="form-box  ml20 mt30 mb10">	
+			<div class="clearfix">
+				<div class="control-sel">
+					<label class="control-label xn-control-label">时间选择：</label>
+					<div class="dropdown">
+						<input type="text" class="form-control" value="{{ publicService.toFormalTime(startDate) + ' - ' + publicService.toFormalTime(endDate) }}" daterangepicker [options]="options" (applyDaterangepicker)="selectedDate($event.picker)">
+						<i class="icon-calendar time-icon"></i>
+					</div>
+				</div>
+				<div class="control-sel">
+					<label class="control-label w70 xn-control-label">客户名称：</label>
+					<div class="dropdown l240">
+						<select class="form-control gray-color" [(ngModel)]="advertiser" (change)="selectAdvertiser()" name="advertiser" title="{{advertiser?advertiser.name:''}}">
+							<option [ngValue]="undefined">请选择客户</option>
+							<option *ngFor="let advertiser of advertisers" [ngValue]="advertiser" title="{{advertiser?advertiser.name:''}}">{{cut.cutLongstring(advertiser.name,20)}}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+				</div>
+				<div class="control-sel">
+					<label class="control-label xn-control-label">项目名称：</label>
+					<div class="dropdown l240">
+						<select class="form-control gray-color" [(ngModel)]="project" (change)="selectProject()" name="project" title="{{project?project.name:''}}">
+							<option [ngValue]="undefined">请选择项目</option>
+							<option *ngFor="let project of projects" [ngValue]="project" title="{{project?project.name:''}}">{{cut.cutLongstring(project.name,20)}}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix">
+				<div class="control-sel">
+					<label class="control-label xn-control-label">活动名称：</label>
+					<div class="dropdown l240">
+						<select class="form-control gray-color" [(ngModel)]="campaign" (change)="selectCampaign()" name="campaign" title="{{campaign?campaign.name:''}}">
+							<option [ngValue]="undefined">请选择活动</option>
+							<option *ngFor="let campaign of campaigns" [ngValue]="campaign" title="{{campaign?campaign.name:''}}">{{cut.cutLongstring(campaign.name,20)}}</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+				</div>
+				<div class="control-sel">
+					<label class="control-label xn-control-label">汇总方式：</label>
+					<div class="dropdown l240">
+						<select class="form-control gray-color" [(ngModel)]="summaryType" (change)="refreshTable()" name="summaryType">
+							<option [ngValue]="'01'">合计</option>
+							<option [ngValue]="'02'">分日</option>
+						</select>
+						<span class='camadd-caret'></span>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix mt20">
+				<form class="control-sel" *ngFor="let v of type">
+					<input type="radio" [(ngModel)]="currentType" [value]="v" name="{{v.value}}" (change)="refreshTable()">
+					{{v.name}}
+				</form>
+			</div>
+		</form>
+		<ngx-datatable
+			[rows]="datas"
+			[columnMode]="'force'"
+			[externalSorting]="true"
+			[draggable]="false"
+			[rowHeight]="currentType.name == '创意' ? 140 : 70"
+			[headerHeight]="50"
+			[limit]="10"
+			[footerHeight]="55"
+			[messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+			[cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+			<ngx-datatable-column *ngIf="summaryType === '02'" name="日期" prop="date" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'" title="{{ row.date }}">{{ row.date }}</div>			
+				</template>
+			</ngx-datatable-column>			
+			<ngx-datatable-column *ngIf="!(currentType.name == '创意')" name="名称" prop="name" [resizeable]="false" [width]="300" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height70 line-height70" cutstring [cutLength]="32">{{ row.name }}</div>			
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column *ngIf="currentType.name == '创意'" name="创意" prop="materialPaths" [resizeable]="false"  [width]="290" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="flex-start-center height140">
+						<div class="width-100">
+							<div *ngIf="row.title" title="{{ row.title }}" class="height35 line-height35 ell textcenter width-100">{{ row.title  }}</div>
+							<div *ngIf="row.description" title="{{ row.description }}"  class="height35 line-height35 ell textcenter width-100">{{ row.description }}</div>
+							<div class="flex-around height70">
+								<div *ngFor="let v of row.materialPaths" class="width60 height60 padding5 bgc-blue2 mr10">
+									<img *ngIf="confirm(v) === 'image'" src = "{{ baseFileUrl + v }}" class="width50 height50 dispaly-block">
+									<video *ngIf="confirm(v) === 'video'" src="{{ baseFileUrl + v }}" controls="controls" class="width50 height50 dispaly-block transparent"></video>
+								</div>
+							</div>	
+						</div>
+					</div>															
+		    	</template>		
+			</ngx-datatable-column>
+			<ngx-datatable-column *ngIf="currentType.name == '创意'" name="活动" prop="campaignName" [resizeable]="false" [width]="290" [canAutoResize]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="height140 line-height140" cutstring [cutLength]="32">{{ row.campaignName }}</div>																	
+		    	</template>		
+			</ngx-datatable-column>
+			<ngx-datatable-column *ngIf="currentType.name == '活动'" prop="adxName" name="ADX" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70">
+						<span title="{{ row.adxName }}">{{ row.adxName }}</span>
+					</div>						
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="展现数" prop="impressionAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">
+						<span title="{{ row.impressionAmount }}">{{ row.impressionAmount }}</span>
+					</div>
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="点击数" prop="clickAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">
+						<span title="{{ row.clickAmount }}">{{ row.clickAmount }}</span>
+					</div>
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="CTR" prop="CTR" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">
+						<span title="{{ row.clickRate | permillage }}">{{ row.clickRate | permillage }}</span>	
+					</div>					
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="二跳数" prop="jumpAmount" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">
+						<span title="{{ row.jumpAmount }}">{{ row.jumpAmount }}</span>	
+					</div>					
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="成本" prop="totalCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">
+						<span title="{{ '￥'+(row.totalCost  |  number:'1.2-2') }}">{{ "￥"+(row.totalCost  |  number:'1.2-2') }}</span>	
+					</div>
+						
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="修正成本" prop="adxCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">
+						<span title="{{ '￥'+(row.adxCost  |  number:'1.2-2') }}">{{ "￥"+(row.adxCost  |  number:'1.2-2') }}</span>	
+					</div>
+						
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="千次展现成本" prop="impressionCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">
+						<span title="{{ '￥'+(row.impressionCost  |  number:'1.2-2') }}">{{ "￥"+(row.impressionCost  |  number:'1.2-2') }}</span>	
+					</div>
+									
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="点击成本" prop="clickCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">
+						<span title="{{ '￥'+(row.clickCost  |  number:'1.2-2') }}">{{ "￥"+(row.clickCost  |  number:'1.2-2') }}</span>		
+					</div>
+							
+				</template>>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="二跳成本" prop="jumpCost" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">
+						<span title="{{ '￥'+(row.jumpCost  |  number:'1.2-2') }}">{{ "￥"+(row.jumpCost  |  number:'1.2-2') }}</span>		
+					</div>
+								
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column *ngIf="!(currentType.name == '创意')" name="操作" prop="" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell height70 line-height70" [class.hl140]="currentType.name == '创意'">	
+						<span class="pro-handle-btn" (click)="gotoAnalysis(row)">详情</span>
+					</div>
+					
+				</template>
+			</ngx-datatable-column>
+		</ngx-datatable>
+	</div>
+</div>

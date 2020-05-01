@@ -1,0 +1,104 @@
+.modal-week .modal-body{
+    padding: 15px 0;
+}
+
+.modal-week .modal-dialog{
+    width: 1200px;
+}
+
+.modal-mark .modal-dialog{
+    width: 1200px;
+}
+.modal700 .modal-dialog{
+    width: 700px;
+}
+
+.panel-heading{
+    border-bottom: 2px solid #b2d2f2;
+    background-color: #f5f9fd;
+    height: 50px;
+    font-size: 16px;
+    line-height:50px;
+    padding: 0 0 0 20px;
+}
+
+.btn-close .pull-right{
+    margin:15px 15px 0 0;
+}
+
+week-range-picker .trg-main .trg-select ul{
+    border-top: 1px #DCDCDC solid;
+}
+week-range-picker .trg-main .trg-select ul:last-child {
+    border-bottom: 1px #DCDCDC solid;
+}
+week-range-picker .trg-main ul li,week-range-picker .trg-thead ul li{
+    float: left;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border-right: 1px #DCDCDC solid;
+}
+week-range-picker .trg-top {
+    border-top: 1px dashed #DCDCDC;
+}
+week-range-picker .trg-thead-ul {
+    border-bottom: 1px solid #DCDCDC;
+}
+week-range-picker .trg-th-ul-left {
+    height: 40px;
+    border-right: 1px solid #DCDCDC;
+}
+week-range-picker .trg-time li:last-child,week-range-picker .trg-select ul li:last-child {
+    border-right: none;
+}
+
+.trg-tip {
+    padding-bottom: 20px;
+    padding-left: 20px;
+}
+.trg-tip p {
+    float: left;
+    padding: 0;
+    margin: 0;
+}
+.trg-tip ul {
+    float: right;
+}
+.trg-tip ul li {
+    float: left;
+    position: relative;
+    padding-left: 40px;
+    margin-right: 20px;
+}
+.trg-tip ul li span {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: -5px;
+    width: 30px;
+    height: 30px;
+    border: 1px #CCC solid;
+}
+.trg-selecting {
+    background:#c4e7ff;
+}
+.trg-selected {
+    background: #4a8fd4;
+}
+.unselect{
+    -moz-user-select:none;/*火狐*/
+    -webkit-user-select:none;/*webkit浏览器*/
+    -ms-user-select:none;/*IE10*/
+    -khtml-user-select:none;/*早期浏览器*/
+    user-select:none;
+}
+.modal-header{
+    border: none!important;
+    background-color: #3a80c6!important;
+    border-top-left-radius: 4px!important;
+    border-top-right-radius: 4px!important;
+}
+.modal-footer{
+    border: none!important;
+}

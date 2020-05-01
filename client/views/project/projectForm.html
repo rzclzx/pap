@@ -1,0 +1,114 @@
+<div class="white-wrapper ofh rel">
+	<div class="add-head">
+		<div class="add-head-bar-box">
+			<span class="add-bar"></span>
+			<span> <span class="hover" (click)="gotoProject()">项目列表</span> / 新建项目</span>
+		</div>
+		<div class="add-title">新建项目</div>
+	</div>
+	<!--<div class="process-bar ofh rel">
+		<div class="col-sm-4 row-center">
+			<div class="col-sm-1 creative_top">
+				<div class="sm-creative_top clearfix">
+					<div class="bar left"></div>
+					<div class="circle bg-warning"><span class="pro-active">...</span></div>
+					<div class="bar bg-gray right"></div>
+				</div>
+				<div class="top_word blue">
+					创建项目
+				</div>
+			</div>
+			<div class="col-sm-1 creative_top">
+				<div class="sm-creative_top clearfix">
+					<div class="bar bg-gray left"></div>
+					<div class="circle bg-gray font20">2</div>
+					<div class="bar bg-gray right"></div>
+				</div>
+				<div class="top_word">
+					创建活动
+				</div>
+			</div>
+			<div class="col-sm-1 creative_top">
+				<div class="sm-creative_top clearfix">
+					<div class="bar bg-gray left"></div>
+					<div class="circle bg-gray font20">3</div>
+				</div>
+				<div class="top_word">
+					上传创意
+				</div>
+			</div>
+		</div>
+	</div>-->
+	<form class="form-horizontal form-common row-center width800" name="myForm">
+		<div class="col-md-offset-1 clearfix">
+			<span class="control-span">项目名称：<span class="B">*</span></span>
+			<div class="left rel">
+				<input type="text" class="form-control l320 color-gray5" validation [validations]="'required;maxlength:100'" [validName]="'项目名称'" placeholder="请输入项目名称" required="" [(ngModel)]="project.name" name="name"/>
+			</div>
+		</div>
+		<div class="col-md-offset-1 clearfix">
+			<span class="control-span">客户名称：<span class="B">*</span></span>
+			<div class="left rel">
+				<select class="form-control l320 color-gray5" [(ngModel)]="advertiser" validation [validations]="'required'" title="{{advertiser?advertiser.name:''}}" [validName]="'客户名称'" (change)="selectAdvertiser()" name="advertiser">
+					<option [ngValue]="undefined">请选择客户</option>
+					<template ngFor let-advertiser [ngForOf]="advertisers">
+						<option [ngValue]="advertiser" title="{{advertiser?advertiser.name:''}}">{{ cut.cutLongstring(advertiser.name,20) }}</option>
+					</template>
+				</select>
+				<span class='camadd-caret'></span>
+			</div>
+		</div>
+		<!--<div class="col-md-offset-1 clearfix">
+			<span class="control-span">效果指标：<span class="B">*</span></span>
+			<div class="left" style="position: relative;">
+				<select class="form-control l160" style="display: inline-block;" [(ngModel)]="project.kpiId" name="kpiId" validation [validations]="'required;'" [validName]="'指标'">
+					<option *ngFor="let kpi of kpis" [value]="kpi.id">{{kpi.name}}</option>
+				</select>
+				<input type="text" class="form-control l160" style="display: inline-block;" placeholder="请输入效果指标" required="" [(ngModel)]="project.kpiVal" name="kpiVal" validation [validations]="'required;number;maxnum:99999999'" [validName]="'指标值'"/>
+			</div>
+		</div>-->
+		<div class="col-md-offset-1 clearfix">
+			<span class="control-span">项目预算：<span class="B">*</span></span>
+			<div class="left rel">
+				<input type="text" class="form-control l320 color-gray5" placeholder="请输入项目预算" required="" [(ngModel)]="project.totalBudget" name="totalBudget" validation [validations]="'required;number;maxnum:99999999'" [validName]="'项目预算'"/>
+			</div>
+		</div>
+		<div class="col-md-offset-1 clearfix">
+			<span class="control-span">OA项目编号：<span class="B">*</span></span>
+			<div class="left rel">
+				<input type="text" class="form-control l320 color-gray5" validation [validations]="'required;disChinese;maxlength:100'" [validName]="'项目编号'" placeholder="请输入项目编号" [(ngModel)]="project.code" name="code"/>
+			</div>
+		</div>
+		<!--<div class="col-md-offset-1 clearfix">
+			<span class="control-span">频次控制：</span>
+			<div class="left" style="position: relative;">
+				<select class="form-control test camadd-select">
+					<option>1</option>
+				</select>
+				<select *ngIf='!isFrequency' disabled='disabled' class="form-control test camadd-select" [(ngModel)]="campaign.frequency.controlObj" name="controlObj">
+					<option *ngFor="let v of controlObjs" [ngValue]="v.value">{{v.name}}</option>
+				</select>
+				<span class='camadd-caret'></span>		
+			</div>
+			<div class="left" style="position: relative;margin-left: 20px;">
+				<select class="form-control test camadd-select">
+					<option>1</option>
+				</select>
+				<select *ngIf='!isFrequency' disabled='disabled' class="form-control test camadd-select" [(ngModel)]="campaign.frequency.timeType" name="timeType">
+					<option *ngFor="let v of timeTypes" [ngValue]="v.value">{{v.name}}</option>
+				</select>
+				<span class='camadd-caret'></span>
+			</div>
+			<div class="left" style="position: relative;margin-left: 20px;" >
+				<input type="text" class="form-control" style="width: 105px;" placeholder="请输入频次" required="" validation [validations]="'selectNumber'" [validName]="'频数'">
+				<input *ngIf='!isFrequency' disabled='disabled' type="text" class="form-control l240" [(ngModel)]="campaign.frequency.number" name="frequencyNumber" placeholder="请输入频次" required="" validation [validations]="'selectNumber'" [validName]="'频数'">
+			</div>
+			<div class="left" style="font-size: 16px;line-height: 38px;margin-left: 10px;">次</div>
+		</div>-->
+		<div class="col-md-offset-1 clearfix ml393">
+			<button class="btn btn-cancel mr20" type="button" (click)="cancel()">取消</button>
+			<button class="btn btn-primary" type="button" (click)="save()">保存</button>
+			<!--<button class="btn btn-primary" type="button" (click)="gotoCampaignAdd()">下一步</button>-->
+		</div>
+	</form>
+</div>

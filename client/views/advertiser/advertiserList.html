@@ -1,0 +1,73 @@
+<div class="row">
+	<div class="col-md-12 pr">
+		<div class="table-head clearfix">
+			<span class="tbhd-bar"></span>
+			<div class="font14 height30"><span routerLinkActive="hover" [routerLink]="['/home/advertiser']">客户管理</span></div>
+		</div>
+		<div class="table-head rel clearfix height70">	
+			<h2 class="mt20">客户列表</h2>
+			<button class="tbhd-btn btn btn-primary bg-btn" (click)="gotoAdvertiserForm()">新建客户</button>
+		</div>
+		<ngx-datatable
+			#datatable
+			[rows]="advertisers"
+			[selected]="selected"
+			[columnMode]="'force'"
+			[selectionType]="'checkbox'"
+			[draggable]="false"
+			[externalSorting]="true"
+			[externalPaging]="true"
+			[headerHeight]="50"
+			[rowHeight]="50"
+			[footerHeight]="50"
+			[limit]="page.pageSize"
+			[count]="page.total"
+        	[offset]="page.pageNo"
+			(page)="onPage($event)"
+			(select)="onSelect($event,page)"
+			[messages]="{ emptyMessage: '暂无数据', totalMessage: '条记录' }"
+			[cssClasses]="{ pagerPrevious:'page-previous', pagerNext:'page-next', pagerLeftArrow: 'page-left', pagerRightArrow: 'page-right' }">
+			<ngx-datatable-column [width]="58" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+				[resizeable]="false" [headerCheckboxable]="true" [checkboxable]="true">
+			</ngx-datatable-column>
+			<ngx-datatable-column name="客户" prop="name" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span cutstring [cutLength]="32">{{ row.name }}</span>
+					</div>							
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="行业" prop="industryName" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span cutstring [cutLength]="32">{{ row.industryName }}</span>
+					</div>								
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="公司名称" prop="company" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row">
+					<div class="ell">
+						<span cutstring [cutLength]="32">{{ row.company }}</span>
+					</div>								
+				</template>
+			</ngx-datatable-column>
+			<ngx-datatable-column name="操作" [resizeable]="false" [sortable]="false">
+				<template ngx-datatable-cell-template let-row="row" let-value="value" let-i="index">
+					<a href="javascript:void(0);" (click)="gotoAdvertiserForm(row.id)" title="编辑">编辑</a>
+					<span class="color-blue3"> | </span>
+					<a href="javascript:void(0);" (click)="gotoAdvertiserAdx(row.id)" title="ADX">ADX</a>
+				</template>
+			</ngx-datatable-column>
+		</ngx-datatable>
+		<page-footer 
+			(outer)="update($event)"
+			(allChangeOuter)="allToggleOuter($event)"
+			(deleteOuter)="outerDelete($event)"
+			[isAllcheck]="true"
+			[allCheck]="allCheck"
+			[pageNo]="page.pageNo"
+			[pageSize]="page.pageSize"
+			[total]="page.total"
+		></page-footer>
+	</div>
+</div>
